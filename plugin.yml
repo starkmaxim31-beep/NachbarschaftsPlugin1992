@@ -1,0 +1,4 @@
+name: NachbarschaftsPlugin1992
+version: 1.0
+main: com.nachbarn.plugin.Main
+api-version: 1.21
