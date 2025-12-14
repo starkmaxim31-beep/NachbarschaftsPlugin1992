@@ -1,1 +1,0 @@
-package com.nachbarn.plugin; public class Main { }
