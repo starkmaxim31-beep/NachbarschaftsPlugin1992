@@ -1,1 +1,7 @@
 
+name: NachbarschaftsPlugin1992
+version: 1.0.0
+main: de.nachbarschaft.Main
+api-version: 1.21
+author: starkmaxim31-beep
+description: Story- und Admin-Plugin für die Minecraft Nachbarschaft
