@@ -6,11 +6,13 @@ public class Main extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        getLogger().info("NachbarschaftsPlugin1992 gestartet!");
+        saveDefaultConfig();
+        getLogger().info("NachbarschaftsPlugin1992 gestartet.");
     }
 
     @Override
     public void onDisable() {
-        getLogger().info("NachbarschaftsPlugin1992 gestoppt!");
+        getLogger().info("NachbarschaftsPlugin1992 gestoppt.");
     }
 }
+
