@@ -6,6 +6,13 @@ author: Yami
 description: Minecraft Nachbarschaft – Admins, Commandblöcke, Story
 
 commands:
+  nachbarschaft:
+    description: Testet das Plugin
+    usage: /nachbarschaft
+  kapitel:
+    description: Story Kapitel System
+    usage: /kapitel
+
   adminhilfe:
     description: Ruft einen Admin
   storystart:
