@@ -1,0 +1,9 @@
+name: NachbarschaftsPlugin1992
+version: 1.0.0
+main: de.nachbarschaft.Main
+api-version: 1.21
+
+commands:
+  kapitel:
+    description: Story Kapitel System
+    usage: /kapitel
