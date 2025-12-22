@@ -10,7 +10,7 @@ commands:
     description: Testet das Plugin
     usage: /nachbarschaft
   kapitel:
-    description: Verwalte Story Kapitel
+    description: Verwalte Story kapitel
     usage: /kapitel
 
   adminhilfe:
