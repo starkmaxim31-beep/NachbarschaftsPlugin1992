@@ -2,8 +2,9 @@ name: NachbarschaftsPlugin1992
 version: 1.0.0
 main: de.nachbarschaft.Main
 api-version: 1.21
-
 commands:
-  kapitel:
-    description: Story Kapitel System
-    usage: /kapitel
+  kapitelstart:
+    description: Startet die Hauptstory und teleportiert dich in die Oberstadt
+  stadtcheck:
+    description: Zeigt Ober- und Unterstadt-Koordinaten
+
