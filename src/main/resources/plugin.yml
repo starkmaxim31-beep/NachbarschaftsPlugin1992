@@ -2,9 +2,18 @@ name: NachbarschaftsPlugin1992
 version: 1.0.0
 main: de.nachbarschaft.Main
 api-version: 1.21
+
 commands:
   kapitelstart:
-    description: Startet die Hauptstory und teleportiert dich in die Oberstadt
+    description: Startet Phase 3 Story
   stadtcheck:
-    description: Zeigt Ober- und Unterstadt-Koordinaten
+    description: Zeigt Städte
+  sanctum:
+    description: Teleportiert ins Sanctum der Admins
+  adminhilfe:
+    description: Ruft Admin Unterstützung
+  adminstory:
+    description: Startet Phase 4 Story
+  adminform:
+    description: Startet Admin Verwandlung
 
