@@ -1,8 +1,6 @@
 package de.nachbarschaft;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -12,9 +10,7 @@ public class Main extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        getLogger().info("NachbarschaftsPlugin1992 Phase 3 aktiviert!");
-
-        // erzeugt config.yml automatisch
+        getLogger().info("NachbarschaftsPlugin Phase 4 aktiviert!");
         saveDefaultConfig();
     }
 
@@ -24,54 +20,82 @@ public class Main extends JavaPlugin {
     }
 
 
-    // --------------------------
-    //        COMMANDS
-    // --------------------------
-
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
-        // Sicherstellen dass ein Spieler den Befehl nutzt
         if (!(sender instanceof Player)) {
-            sender.sendMessage("Nur Spieler können diesen Befehl nutzen.");
+            sender.sendMessage("Nur Spieler können das benutzen!");
             return true;
         }
 
         Player p = (Player) sender;
 
 
-        // ------------------------------------------
-        // /kapitelstart → teleportiert in Oberstadt
-        // ------------------------------------------
-        if (cmd.getName().equalsIgnoreCase("kapitelstart")) {
+        // -------------------------------
+        // SANCTUM TELEPORT
+        // -------------------------------
+        if (cmd.getName().equalsIgnoreCase("sanctum")) {
 
-            Location oberstadt = getLocationFromConfig("locations.oberstadt");
-
-            if (oberstadt == null) {
-                p.sendMessage("§cFehler: Oberstadt-Koordinaten fehlen in der config.yml!");
+            Location sanctum = getLocation("sanctum");
+            if (sanctum == null) {
+                p.sendMessage("§cSanctum nicht in config gefunden!");
                 return true;
             }
 
-            p.teleport(oberstadt);
-            p.sendMessage("§aDas Kapitel beginnt! Willkommen in der Oberstadt.");
+            p.teleport(sanctum);
+            p.sendTitle("§fSanctum der Admins", "§7Du betrittst die wahre Macht...", 10, 80, 10);
+            p.playSound(p.getLocation(), Sound.AMBIENT_CAVE, 1, 0.5f);
 
             return true;
         }
 
 
-        // ------------------------------------------
-        // /stadtcheck → Zeigt die gespeicherten Orte
-        // ------------------------------------------
-        if (cmd.getName().equalsIgnoreCase("stadtcheck")) {
+        // -------------------------------
+        // ADMIN STORY
+        // -------------------------------
+        if (cmd.getName().equalsIgnoreCase("adminstory")) {
 
-            Location o = getLocationFromConfig("locations.oberstadt");
-            Location u = getLocationFromConfig("locations.unterstadt");
+            p.sendMessage("§6[Gelber Admin] §fDie Welt verändert sich...");
+            p.sendMessage("§a[Grüner Admin] §fWir müssen aufpassen...");
+            p.sendMessage("§5[Lila Admin] §fEtwas Großes kommt...");
+            p.sendMessage("§7Mysteriöser Spieler beobachtet dich...");
 
-            p.sendMessage("§e--- Städte Übersicht ---");
-            if (o != null)
-                p.sendMessage("§aOberstadt: §f" + o.getWorld().getName() + " " + o.getX() + " " + o.getY() + " " + o.getZ());
-            if (u != null)
-                p.sendMessage("§bUnterstadt: §f" + u.getWorld().getName() + " " + u.getX() + " " + u.getY() + " " + u.getZ());
+            p.playSound(p.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 1, 1);
+
+            return true;
+        }
+
+
+        // -------------------------------
+        // ADMIN HILFE
+        // -------------------------------
+        if (cmd.getName().equalsIgnoreCase("adminhilfe")) {
+
+            Bukkit.broadcastMessage("§c⚠ Ein Admin greift ein...");
+
+            for (Player pl : Bukkit.getOnlinePlayers()) {
+                pl.addPotionEffect(new org.bukkit.potion.PotionEffect(
+                        org.bukkit.potion.PotionEffectType.DARKNESS, 60, 1
+                ));
+            }
+
+            p.sendMessage("§eEin Admin ist erschienen... aber du siehst ihn nicht richtig.");
+            return true;
+        }
+
+
+        // -------------------------------
+        // ADMIN VERWANDLUNG
+        // -------------------------------
+        if (cmd.getName().equalsIgnoreCase("adminform")) {
+
+            p.sendTitle("§6Du veränderst dich...", "§eDie Admin Macht erwacht...", 10, 80, 10);
+            p.getWorld().strikeLightningEffect(p.getLocation());
+            p.getWorld().spawnParticle(Particle.ENCHANTMENT_TABLE, p.getLocation(), 200);
+            p.playSound(p.getLocation(), Sound.ITEM_TOTEM_USE, 1, 1);
+
+            Bukkit.getScheduler().runTaskLater(this, () ->
+                    p.sendMessage("§f[Weißer Admin] Du bist auf dem richtigen Weg..."), 80);
 
             return true;
         }
@@ -80,10 +104,7 @@ public class Main extends JavaPlugin {
     }
 
 
-    // ------------------------------------------
-    //     Holt eine Location aus config.yml
-    // ------------------------------------------
-    private Location getLocationFromConfig(String path) {
+    private Location getLocation(String path) {
 
         String worldName = getConfig().getString(path + ".world");
         World world = Bukkit.getWorld(worldName);
