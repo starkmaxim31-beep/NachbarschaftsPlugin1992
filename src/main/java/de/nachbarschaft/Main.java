@@ -1,16 +1,21 @@
 package de.nachbarschaft;
 
 import org.bukkit.*;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 public class Main extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        getLogger().info("NachbarschaftsPlugin Phase 4 aktiviert!");
+        getLogger().info("Phase 5 aktiviert!");
         saveDefaultConfig();
     }
 
@@ -31,92 +36,83 @@ public class Main extends JavaPlugin {
         Player p = (Player) sender;
 
 
-        // -------------------------------
-        // SANCTUM TELEPORT
-        // -------------------------------
-        if (cmd.getName().equalsIgnoreCase("sanctum")) {
+        // -----------------------
+        // SEELENWAFFEN SYSTEM
+        // -----------------------
+        if(cmd.getName().equalsIgnoreCase("seelenstart")){
 
-            Location sanctum = getLocation("sanctum");
-            if (sanctum == null) {
-                p.sendMessage("§cSanctum nicht in config gefunden!");
-                return true;
+            Bukkit.broadcastMessage("§b✦ Die Energie der Seelen erwacht...");
+            for(Player pl : Bukkit.getOnlinePlayers()){
+                pl.playSound(pl.getLocation(), Sound.ITEM_TOTEM_USE, 1, 1);
+                pl.spawnParticle(Particle.SOUL, pl.getLocation(), 100);
+            }
+            return true;
+        }
+
+
+        // -----------------------
+        // SCHLÜSSELSCHWERT
+        // -----------------------
+        if(cmd.getName().equalsIgnoreCase("waffe")){
+
+            ItemStack sword = new ItemStack(Material.NETHERITE_SWORD);
+            ItemMeta meta = sword.getItemMeta();
+            meta.setDisplayName("§6Schlüsselschwert");
+            sword.setItemMeta(meta);
+
+            p.getInventory().addItem(sword);
+
+            p.sendMessage("§6Du hast deine Seelenwaffe erhalten.");
+            return true;
+        }
+
+
+        // -----------------------
+        // SANCTUM WARN EVENT
+        // -----------------------
+        if(cmd.getName().equalsIgnoreCase("sanctumwarn")){
+
+            Bukkit.broadcastMessage("§c⚠ Das Sanctum reagiert... etwas stimmt nicht!");
+
+            for(Player pl : Bukkit.getOnlinePlayers()){
+                pl.addPotionEffect(new PotionEffect(PotionEffectType.DARKNESS, 200, 1));
+                pl.playSound(pl.getLocation(), Sound.ENTITY_WARDEN_SONIC_CHARGE, 1, 1);
             }
 
-            p.teleport(sanctum);
-            p.sendTitle("§fSanctum der Admins", "§7Du betrittst die wahre Macht...", 10, 80, 10);
-            p.playSound(p.getLocation(), Sound.AMBIENT_CAVE, 1, 0.5f);
+            return true;
+        }
+
+
+        // -----------------------
+        // PRÜFUNGEN
+        // -----------------------
+        if(cmd.getName().equalsIgnoreCase("prüfung")){
+
+            p.sendTitle("§6Prüfung beginnt", "§fHalte durch...",10,100,10);
+            p.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 200, 3));
+            p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 200, 2));
 
             return true;
         }
 
 
-        // -------------------------------
-        // ADMIN STORY
-        // -------------------------------
-        if (cmd.getName().equalsIgnoreCase("adminstory")) {
+        // -----------------------
+        // FINAL ARC
+        // -----------------------
+        if(cmd.getName().equalsIgnoreCase("adminfinal")){
 
-            p.sendMessage("§6[Gelber Admin] §fDie Welt verändert sich...");
-            p.sendMessage("§a[Grüner Admin] §fWir müssen aufpassen...");
-            p.sendMessage("§5[Lila Admin] §fEtwas Großes kommt...");
-            p.sendMessage("§7Mysteriöser Spieler beobachtet dich...");
+            Bukkit.broadcastMessage("§e[Weißer Admin] Es ist Zeit...");
+            Bukkit.broadcastMessage("§6[Gelber Admin] Ich… ich kontrolliere das hier!");
 
-            p.playSound(p.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 1, 1);
-
-            return true;
-        }
-
-
-        // -------------------------------
-        // ADMIN HILFE
-        // -------------------------------
-        if (cmd.getName().equalsIgnoreCase("adminhilfe")) {
-
-            Bukkit.broadcastMessage("§c⚠ Ein Admin greift ein...");
-
-            for (Player pl : Bukkit.getOnlinePlayers()) {
-                pl.addPotionEffect(new org.bukkit.potion.PotionEffect(
-                        org.bukkit.potion.PotionEffectType.DARKNESS, 60, 1
-                ));
+            for(Player pl : Bukkit.getOnlinePlayers()){
+                pl.playSound(pl.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL,1,1);
+                pl.spawnParticle(Particle.DRAGON_BREATH, pl.getLocation(), 200);
             }
-
-            p.sendMessage("§eEin Admin ist erschienen... aber du siehst ihn nicht richtig.");
-            return true;
-        }
-
-
-        // -------------------------------
-        // ADMIN VERWANDLUNG
-        // -------------------------------
-        if (cmd.getName().equalsIgnoreCase("adminform")) {
-
-            p.sendTitle("§6Du veränderst dich...", "§eDie Admin Macht erwacht...", 10, 80, 10);
-            p.getWorld().strikeLightningEffect(p.getLocation());
-            p.getWorld().spawnParticle(Particle.ENCHANT, p.getLocation(), 200);
-            p.playSound(p.getLocation(), Sound.ITEM_TOTEM_USE, 1, 1);
-
-            Bukkit.getScheduler().runTaskLater(this, () ->
-                    p.sendMessage("§f[Weißer Admin] Du bist auf dem richtigen Weg..."), 80);
 
             return true;
         }
 
         return false;
     }
-
-
-    private Location getLocation(String path) {
-
-        String worldName = getConfig().getString(path + ".world");
-        World world = Bukkit.getWorld(worldName);
-
-        if (world == null) return null;
-
-        double x = getConfig().getDouble(path + ".x");
-        double y = getConfig().getDouble(path + ".y");
-        double z = getConfig().getDouble(path + ".z");
-
-        return new Location(world, x, y, z);
-    }
 }
-
 
