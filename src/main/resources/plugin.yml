@@ -16,4 +16,14 @@ commands:
     description: Startet Phase 4 Story
   adminform:
     description: Startet Admin Verwandlung
+  seelenstart:
+    description: Aktiviert Seelenwaffen System
+  waffe:
+    description: Gibt Seelenwaffe
+  prüfung:
+    description: Startet eine Admin Prüfung
+  sanctumwarn:
+    description: Warnevent im Sanctum
+  adminfinal:
+    description: Startet Finalstory Phase
 
