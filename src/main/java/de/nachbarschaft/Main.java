@@ -89,7 +89,7 @@ public class Main extends JavaPlugin {
         if(cmd.getName().equalsIgnoreCase("prüfung")){
 
             p.sendTitle("§6Prüfung beginnt", "§fHalte durch...",10,100,10);
-            p.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 200, 3));
+            p.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, 200, 3));
             p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 200, 2));
 
             return true;
