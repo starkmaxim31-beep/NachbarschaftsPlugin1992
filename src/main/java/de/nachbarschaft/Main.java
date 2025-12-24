@@ -91,7 +91,7 @@ public class Main extends JavaPlugin {
 
             p.sendTitle("§6Du veränderst dich...", "§eDie Admin Macht erwacht...", 10, 80, 10);
             p.getWorld().strikeLightningEffect(p.getLocation());
-            p.getWorld().spawnParticle(Particle.ENCHANTMENT_TABLE, p.getLocation(), 200);
+            p.getWorld().spawnParticle(Particle.ENCHANT, p.getLocation(), 200);
             p.playSound(p.getLocation(), Sound.ITEM_TOTEM_USE, 1, 1);
 
             Bukkit.getScheduler().runTaskLater(this, () ->
