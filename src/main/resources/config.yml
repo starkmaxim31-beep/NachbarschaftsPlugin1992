@@ -11,4 +11,9 @@ locations:
     x: -50
     y: 40
     z: -120
+sanctum:
+  world: world
+  x: 300
+  y: 120
+  z: 300
 
