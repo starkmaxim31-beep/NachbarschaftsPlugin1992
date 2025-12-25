@@ -2,28 +2,14 @@ name: NachbarschaftsPlugin1992
 version: 1.0.0
 main: de.nachbarschaft.Main
 api-version: 1.21
-
+authors: [ "DU" ]
+description: Minecraft Nachbarschaft Phase 6 System
 commands:
-  kapitelstart:
-    description: Startet Phase 3 Story
-  stadtcheck:
-    description: Zeigt Städte
+  kapitel:
+    description: Steuert die Story Kapitel
+  ritual:
+    description: Führt gefährliche Rituale aus
   sanctum:
-    description: Teleportiert ins Sanctum der Admins
-  adminhilfe:
-    description: Ruft Admin Unterstützung
-  adminstory:
-    description: Startet Phase 4 Story
-  adminform:
-    description: Startet Admin Verwandlung
-  seelenstart:
-    description: Aktiviert Seelenwaffen System
-  waffe:
-    description: Gibt Seelenwaffe
-  prüfung:
-    description: Startet eine Admin Prüfung
-  sanctumwarn:
-    description: Warnevent im Sanctum
-  adminfinal:
-    description: Startet Finalstory Phase
-
+    description: Öffnet das Sanctum der Admins
+  adminpalast:
+    description: Teleportiert zum Admin Palast
