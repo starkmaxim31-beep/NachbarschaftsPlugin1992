@@ -2,86 +2,49 @@ package de.nachbarschaft;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
+import org.bukkit.World;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-public class Main extends JavaPlugin {
+public class Main extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-        getLogger().info("Phase 6 geladen!");
-    }
+        Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[Nachbarschaft] Phase 6 aktiv!");
+        getServer().getPluginManager().registerEvents(this, this);
 
-    @Override
-    public void onDisable() {
-        getLogger().info("Plugin deaktiviert");
-    }
+        getCommand("adminform").setExecutor((sender, cmd, label, args) -> {
+            if (!(sender instanceof Player)) return true;
+            Player p = (Player) sender;
 
-    @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-
-        if (!(sender instanceof Player)) return true;
-        Player p = (Player) sender;
-
-        // ADMIN FORM
-        if (cmd.getName().equalsIgnoreCase("adminform")) {
-            p.sendTitle("§5Admin Erwachen", "§dDie Macht fließt durch dich...");
+            p.sendMessage(ChatColor.AQUA + "⚡ Du spürst eine riesige Macht in dir erwachen...");
             p.getWorld().strikeLightningEffect(p.getLocation());
-            p.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 600, 2));
-            p.addPotionEffect(new PotionEffect(PotionEffectType.STRENGTH, 600, 2));
-            p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 600, 2));
-            p.playSound(p.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 1, 1);
-            p.sendMessage("§dDu spürst die Macht der Admins...");
-            return true;
-        }
+            p.getWorld().strikeLightningEffect(p.getLocation());
 
-        // SANCTUM TELEPORT
-        if (cmd.getName().equalsIgnoreCase("sanctum")) {
-            Location sanctum = new Location(p.getWorld(), 0, 150, 0);
-            p.teleport(sanctum);
-            p.sendMessage("§5Du bist im Sanctum der Admins angekommen...");
-            return true;
-        }
+            p.addPotionEffect(new PotionEffect(PotionEffectType.STRENGTH, 999999, 3));
+            p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 999999, 2));
+            p.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, 999999, 2));
 
-        // SANCTUM WARNUNG
-        if (cmd.getName().equalsIgnoreCase("sanctumwarn")) {
-            Bukkit.broadcastMessage("§4⚠ Sanctum Warnung! Eine große Macht bewegt sich!");
-            p.playSound(p.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1, 1);
+            p.setGameMode(GameMode.SURVIVAL);
+            p.sendMessage(ChatColor.GOLD + "Du bist nun in deiner Admin-Form!");
             return true;
-        }
+        });
 
-        // RITUAL SYSTEM
-        if (cmd.getName().equalsIgnoreCase("ritual")) {
-            p.sendMessage("§cRituale müssen im Nether stattfinden!");
-            p.sendMessage("§7Suche den Professor… er kennt den Weg.");
-            p.playSound(p.getLocation(), Sound.AMBIENT_NETHER_WASTES_MOOD, 1, 1);
-            return true;
-        }
-
-        // SEELEN SYSTEM START
-        if (cmd.getName().equalsIgnoreCase("seelenstart")) {
-            p.sendMessage("§bDeine Seele beginnt zu erwachen…");
-            p.playSound(p.getLocation(), Sound.BLOCK_BEACON_ACTIVATE, 1, 1);
-            return true;
-        }
-
-        // WAFFE
-        if (cmd.getName().equalsIgnoreCase("waffe")) {
+        getCommand("waffe").setExecutor((sender, cmd, label, args) -> {
+            if (!(sender instanceof Player)) return true;
+            Player p = (Player) sender;
 
             ItemStack keyblade = new ItemStack(Material.NETHERITE_SWORD);
             ItemMeta meta = keyblade.getItemMeta();
-
-            meta.setDisplayName(ChatColor.AQUA + "Seelenschlüssel");
+            meta.setDisplayName(ChatColor.LIGHT_PURPLE + "◆ Seelenwaffe – Schlüsselschwert ◆");
             meta.setUnbreakable(true);
             keyblade.setItemMeta(meta);
 
@@ -89,31 +52,46 @@ public class Main extends JavaPlugin {
             keyblade.addUnsafeEnchantment(Enchantment.MENDING, 1);
 
             p.getInventory().addItem(keyblade);
-            p.sendMessage("§aDu hast deine Seelenwaffe erhalten!");
+            p.sendMessage(ChatColor.LIGHT_PURPLE + "✨ Deine Seelenwaffe hat dich gefunden!");
             return true;
-        }
+        });
 
-        // PRÜFUNG
-        if (cmd.getName().equalsIgnoreCase("prüfung")) {
-            p.sendMessage("§eDie Prüfung hat begonnen… sei bereit.");
+        getCommand("seelenstart").setExecutor((sender, cmd, label, args) -> {
+            if (!(sender instanceof Player)) return true;
+            Player p = (Player) sender;
+
+            p.sendMessage(ChatColor.GREEN + "💚 Deine Seele hat ihre Reise begonnen…");
+            p.sendMessage(ChatColor.GRAY + "Weitere Kräfte folgen in den nächsten Kapiteln.");
             return true;
-        }
+        });
 
-        // ADMIN STORY
-        if (cmd.getName().equalsIgnoreCase("adminstory")) {
-            p.sendMessage("§dDer Weg der Admins ist gefährlich…");
-            p.sendMessage("§7Der Gelbe Admin wankt. Der Weiße beobachtet.");
+        getCommand("adminstory").setExecutor((sender, cmd, label, args) -> {
+            sender.sendMessage(ChatColor.YELLOW + "📖 Die Admin Story beginnt...");
+            sender.sendMessage(ChatColor.GRAY + "Es gibt gute Admins… und welche, die gefallen sind.");
             return true;
-        }
+        });
 
-        // STADT CHECK
-        if (cmd.getName().equalsIgnoreCase("stadtcheck")) {
-            p.sendMessage("§aOberstadt: Stabil");
-            p.sendMessage("§cUnterstadt: Gefahr registriert!");
+        getCommand("stadtcheck").setExecutor((sender, cmd, label, args) -> {
+            sender.sendMessage(ChatColor.BLUE + "🏙 Oberstadt & Unterstadt sind vorbereitet.");
+            sender.sendMessage(ChatColor.GRAY + "Kapitel bestimmen ihren aktiven Zustand.");
             return true;
-        }
+        });
 
-        return true;
+        getCommand("sanctumwarn").setExecutor((sender, cmd, label, args) -> {
+            sender.sendMessage(ChatColor.DARK_RED + "⚠ Betrete das Sanctum nur, wenn du bereit bist.");
+            return true;
+        });
+
+        getCommand("ritual").setExecutor((sender, cmd, label, args) -> {
+            sender.sendMessage(ChatColor.DARK_PURPLE + "🔥 Die Rituale finden im Nether statt.");
+            sender.sendMessage(ChatColor.GRAY + "Nur Mutige wagen es…");
+            return true;
+        });
+    }
+
+    @Override
+    public void onDisable() {
+        Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[Nachbarschaft] Plugin deaktiviert");
     }
 }
 
