@@ -66,13 +66,16 @@ public class Main extends JavaPlugin {
             return true;
         }
 
-        if(cmd.getName().equalsIgnoreCase("ritual")){
-            p.sendMessage("§cDas Ritual beginnt... es ist gefährlich!");
-            p.getWorld().strikeLightningEffect(p.getLocation());
-            return true;
-        }
-
+      if(cmd.getName().equalsIgnoreCase("ritual")){
+    if(!p.getWorld().getName().toLowerCase().contains("nether")){
+        p.sendMessage("§cDas Ritual kann NUR im Nether stattfinden!");
         return true;
     }
+
+    p.sendMessage("§4Das gefährliche Ritual beginnt...");
+    p.getWorld().strikeLightningEffect(p.getLocation());
+    p.getWorld().createExplosion(p.getLocation(), 0, false, false);
+    return true;
 }
+
 
