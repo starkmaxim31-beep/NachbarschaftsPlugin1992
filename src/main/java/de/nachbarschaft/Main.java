@@ -38,7 +38,7 @@ public class Main extends JavaPlugin {
             p.sendTitle("§5Admin Erwachen", "§dDie Macht fließt durch dich...");
             p.getWorld().strikeLightningEffect(p.getLocation());
             p.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 600, 2));
-            p.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 600, 2));
+            p.addPotionEffect(new PotionEffect(PotionEffectType.STRENGTH, 600, 2));
             p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 600, 2));
             p.playSound(p.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 1, 1);
             p.sendMessage("§dDu spürst die Macht der Admins...");
@@ -85,7 +85,7 @@ public class Main extends JavaPlugin {
             meta.setUnbreakable(true);
             keyblade.setItemMeta(meta);
 
-            keyblade.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 6);
+            keyblade.addUnsafeEnchantment(Enchantment.SHARPNESS, 6);
             keyblade.addUnsafeEnchantment(Enchantment.MENDING, 1);
 
             p.getInventory().addItem(keyblade);
