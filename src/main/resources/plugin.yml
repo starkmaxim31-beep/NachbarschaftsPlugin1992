@@ -2,23 +2,39 @@ name: NachbarschaftsPlugin1992
 main: de.nachbarschaft.Main
 version: 1.0.0
 api-version: 1.21
+author: Yami
+description: Nachbarschaft Story Plugin
+
 commands:
-  adminform:
-    description: Starte Admin Transformation
+  kapitel:
+    description: Kapitel System starten
+    usage: /kapitel
+  sanctum:
+    description: Öffnet das Sanctum System
+    usage: /sanctum
+  ritual:
+    description: Startet Ritual-System
+    usage: /ritual
   waffe:
     description: Gibt dir deine Seelenwaffe
-  seelenstart:
-    description: Beginn der Seelenwaffen-Reise
+    usage: /waffe
+  adminform:
+    description: Admin Verwandlung
+    usage: /adminform
   adminstory:
-    description: Admin Story Infos
-  stadtcheck:
-    description: Checkt Ober/Unterstadt Status
+    description: Admin Story starten
+    usage: /adminstory
+  seelenstart:
+    description: Startet Seelen-System
+    usage: /seelenstart
+  pruefung:
+    description: Startet eine Prüfung
+    usage: /pruefung
   sanctumwarn:
-    description: Warnung vor dem Sanctum
-  ritual:
-    description: Ritual Hinweise
- prüfung:     
-    description: Startet Prüfung
- sanctum:     
-    description: Teleport ins Sanctum
+    description: Sanctum Warn-System
+    usage: /sanctumwarn
+  stadtcheck:
+    description: Überprüft Stadtstatus
+    usage: /stadtcheck
+
 
