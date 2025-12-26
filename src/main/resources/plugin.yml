@@ -4,12 +4,13 @@ main: de.nachbarschaft.Main
 api-version: 1.21
 authors: [ "DU" ]
 description: Minecraft Nachbarschaft Phase 6 System
+
 commands:
   kapitel:
     description: Steuert die Story Kapitel
   ritual:
-    description: Führt gefährliche Rituale aus
+    description: Führt gefährliche Rituale im Nether aus
   sanctum:
-    description: Öffnet das Sanctum der Admins
+    description: öffnet Zugang zum Sanctum der Admins
   adminpalast:
     description: Teleportiert zum Admin Palast
