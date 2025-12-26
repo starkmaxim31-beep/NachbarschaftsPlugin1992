@@ -8,20 +8,47 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scoreboard.*;
+
+import java.util.HashMap;
+import java.util.UUID;
 
 public class Main extends JavaPlugin {
 
+    private final HashMap<UUID, Integer> kapitelFortschritt = new HashMap<>();
+
     @Override
     public void onEnable() {
-        getLogger().info("NachbarschaftsPlugin – Phase 6 geladen!");
+        getLogger().info("NachbarschaftsPlugin Phase 6 aktiviert!");
     }
 
     @Override
     public void onDisable() {
-        getLogger().info("NachbarschaftsPlugin deaktiviert.");
+        getLogger().info("NachbarschaftsPlugin deaktiviert!");
     }
 
+    // ----------------------------------------------------------
+    // KAPITEL HUD SYSTEM
+    // ----------------------------------------------------------
+    private void startKapitelHUD(Player p) {
+        ScoreboardManager manager = Bukkit.getScoreboardManager();
+        Scoreboard board = manager.getNewScoreboard();
+        Objective obj = board.registerNewObjective("kapitel", Criteria.DUMMY, ChatColor.GOLD + "Kapitel");
+        obj.setDisplaySlot(DisplaySlot.SIDEBAR);
 
+        int fortschritt = kapitelFortschritt.getOrDefault(p.getUniqueId(), 1);
+
+        obj.getScore(ChatColor.YELLOW + "Aktuelles Kapitel:").setScore(3);
+        obj.getScore(ChatColor.GREEN + "Kapitel " + fortschritt).setScore(2);
+        obj.getScore(ChatColor.GRAY + "Story aktiv!").setScore(1);
+
+        p.setScoreboard(board);
+    }
+
+    // ----------------------------------------------------------
+    // COMMANDS
+    // ----------------------------------------------------------
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
@@ -32,23 +59,27 @@ public class Main extends JavaPlugin {
 
         Player p = (Player) sender;
 
-        // ----------- KAPITEL SYSTEM ----------
+        // ------------------ /kapitel ------------------
         if (cmd.getName().equalsIgnoreCase("kapitel")) {
-            p.sendMessage(ChatColor.GOLD + "------------------------------------------------");
-            p.sendMessage(ChatColor.YELLOW + "Nachbarschaft – Kapitel System aktiviert!");
-            p.sendMessage(ChatColor.AQUA + "Du befindest dich aktuell in: " + ChatColor.GREEN + "Kapitel 1");
-            p.sendMessage(ChatColor.GRAY + "Fortschritt folgt automatisch in späteren Phasen.");
-            p.sendMessage(ChatColor.GOLD + "------------------------------------------------");
+
+            kapitelFortschritt.putIfAbsent(p.getUniqueId(), 1);
+            startKapitelHUD(p);
+
+            p.sendMessage(ChatColor.GOLD + "--------------------------------");
+            p.sendMessage(ChatColor.AQUA + "Kapitel System aktiviert!");
+            p.sendMessage(ChatColor.GREEN + "Du bist aktuell in Kapitel: " +
+                    kapitelFortschritt.get(p.getUniqueId()));
+            p.sendMessage(ChatColor.GRAY + "Fortschritt folgt durch Story!");
+            p.sendMessage(ChatColor.GOLD + "--------------------------------");
             return true;
         }
 
-        // ----------- SANCTUM ----------
+        // ------------------ /sanctum ------------------
         if (cmd.getName().equalsIgnoreCase("sanctum")) {
-
             World world = Bukkit.getWorld("world");
 
             if (world == null) {
-                p.sendMessage(ChatColor.RED + "Konnte Welt nicht finden!");
+                p.sendMessage(ChatColor.RED + "Welt konnte nicht gefunden werden!");
                 return true;
             }
 
@@ -57,18 +88,52 @@ public class Main extends JavaPlugin {
 
             p.sendMessage(ChatColor.DARK_PURPLE + "------------------------------------");
             p.sendMessage(ChatColor.LIGHT_PURPLE + "Du betrittst das Sanctum der Admins...");
-            p.sendMessage(ChatColor.GRAY + "Ein Ort zwischen Realität und Macht.");
+            p.sendMessage(ChatColor.GRAY + "Zwischen Realität und Macht.");
             p.sendMessage(ChatColor.DARK_PURPLE + "------------------------------------");
 
             return true;
         }
 
-        // ----------- TEST ----------
+        // ------------------ /prüfung ------------------
+        if (cmd.getName().equalsIgnoreCase("prüfung")) {
+
+            p.sendMessage(ChatColor.RED + "Die Adminprüfung beginnt...");
+            p.sendMessage(ChatColor.GRAY + "Du wirst getestet... bestehe die Prüfung!");
+
+            new BukkitRunnable() {
+                int timer = 5;
+
+                @Override
+                public void run() {
+                    if (timer == 0) {
+                        p.sendMessage(ChatColor.GREEN + "✔ Prüfung bestanden!");
+                        kapitelFortschritt.put(p.getUniqueId(), 6);
+                        startKapitelHUD(p);
+                        cancel();
+                        return;
+                    }
+
+                    p.sendTitle(
+                            ChatColor.GOLD + "Prüfung",
+                            ChatColor.YELLOW + "Noch " + timer + " Sekunden...",
+                            10, 20, 10
+                    );
+
+                    timer--;
+                }
+
+            }.runTaskTimer(this, 0, 20);
+
+            return true;
+        }
+
+        // ------------------ /nachbarschafttest ------------------
         if (cmd.getName().equalsIgnoreCase("nachbarschafttest")) {
-            p.sendMessage(ChatColor.GREEN + "Plugin funktioniert! Commands sind aktiv.");
+            p.sendMessage(ChatColor.GREEN + "Plugin läuft. Commands aktiv.");
             return true;
         }
 
         return false;
     }
 }
+
