@@ -4,22 +4,21 @@ version: 1.0.0
 api-version: 1.21
 commands:
   adminform:
-    description: Admin Transformation
-  sanctum:
-    description: Teleport ins Sanctum
-  sanctumwarn:
-    description: Warnung des Sanctums
-  ritual:
-    description: Startet Ritual System
-  seelenstart:
-    description: Startet Seelen System
+    description: Starte Admin Transformation
   waffe:
-    description: Gibt die Seelenwaffe
-  prüfung:
-    description: Startet Prüfung
+    description: Gibt dir deine Seelenwaffe
+  seelenstart:
+    description: Beginn der Seelenwaffen-Reise
   adminstory:
-    description: Startet Admin Story
+    description: Admin Story Infos
   stadtcheck:
-    description: Status Ober & Unterstadt
-
+    description: Checkt Ober/Unterstadt Status
+  sanctumwarn:
+    description: Warnung vor dem Sanctum
+  ritual:
+    description: Ritual Hinweise
+ prüfung:     
+    description: Startet Prüfung
+ sanctum:     
+    description: Teleport ins Sanctum
 
