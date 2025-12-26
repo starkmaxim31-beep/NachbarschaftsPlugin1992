@@ -51,6 +51,36 @@ public class Main extends JavaPlugin {
                 return true;
             }
         }
+        // ----------------- Admin Story -----------------
+if (cmd.getName().equalsIgnoreCase("adminstory")) {
+    p.sendMessage("§6Die Geschichte der Admins beginnt sich zu entfalten...");
+    return true;
+}
+
+// ----------------- Seelenwaffen Start -----------------
+if (cmd.getName().equalsIgnoreCase("seelenstart")) {
+    p.sendMessage("§bDie Macht der Seelenwaffen erwacht...");
+    return true;
+}
+
+// ----------------- Seelenwaffen Verwaltung -----------------
+if (cmd.getName().equalsIgnoreCase("waffe")) {
+    p.sendMessage("§dDeine Seelenwaffe reagiert...");
+    return true;
+}
+
+// ----------------- Prüfungs System -----------------
+if (cmd.getName().equalsIgnoreCase("prüfung")) {
+    p.sendMessage("§cEine gefährliche Prüfung beginnt...");
+    return true;
+}
+
+// ----------------- Sanctum Warnsystem -----------------
+if (cmd.getName().equalsIgnoreCase("sanctumwarn")) {
+    p.sendMessage("§4WARNUNG: Das Sanctum ist extrem gefährlich...");
+    return true;
+}
+
 
         // ----------------- Admin Palast -----------------
         if (cmd.getName().equalsIgnoreCase("adminpalast")) {
