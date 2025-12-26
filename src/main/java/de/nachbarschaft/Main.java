@@ -7,6 +7,13 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import java.util.ArrayList;
+import java.util.List;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.Sound;
 
 public class Main extends JavaPlugin {
 
@@ -63,12 +70,29 @@ if (cmd.getName().equalsIgnoreCase("seelenstart")) {
     return true;
 }
 
-// ----------------- Seelenwaffen Verwaltung -----------------
+// ----------------- Seelenwaffe geben -----------------
 if (cmd.getName().equalsIgnoreCase("waffe")) {
-    p.sendMessage("§dDeine Seelenwaffe reagiert...");
+
+    ItemStack sword = new ItemStack(org.bukkit.Material.NETHERITE_SWORD);
+    ItemMeta meta = sword.getItemMeta();
+
+    meta.setDisplayName("§b§lSeelenschwert");
+    meta.setUnbreakable(true);
+
+    List<String> lore = new ArrayList<>();
+    lore.add("§7Gebunden an:");
+    lore.add("§a" + p.getName());
+    lore.add("§eDash • Multi-Hit • Luftangriff • Spezial");
+    meta.setLore(lore);
+
+    sword.setItemMeta(meta);
+
+    p.getInventory().addItem(sword);
+    p.sendMessage("§bDu hast deine Seelenwaffe erhalten!");
+
     return true;
 }
-
+        
 // ----------------- Prüfungs System -----------------
 if (cmd.getName().equalsIgnoreCase("prüfung")) {
     p.sendMessage("§cEine gefährliche Prüfung beginnt...");
@@ -97,6 +121,22 @@ if (cmd.getName().equalsIgnoreCase("sanctumwarn")) {
             p.sendMessage("§5Du fühlst die Macht der Admins...");
             return true;
         }
+// ----------------- Admin Verwandlung -----------------
+if (cmd.getName().equalsIgnoreCase("adminform")) {
+
+    p.sendMessage("§6§lDie Admin-Macht erwacht in dir...");
+
+    p.getWorld().strikeLightningEffect(p.getLocation());
+    p.getWorld().strikeLightningEffect(p.getLocation());
+
+    p.addPotionEffect(new PotionEffect(PotionEffectType.STRENGTH, 600, 2));
+    p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 600, 2));
+    p.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 600, 0));
+
+    p.getWorld().playSound(p.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 1f, 1f);
+
+    return true;
+}
 
         // ----------------- Ritual NUR im Nether -----------------
         if (cmd.getName().equalsIgnoreCase("ritual")) {
