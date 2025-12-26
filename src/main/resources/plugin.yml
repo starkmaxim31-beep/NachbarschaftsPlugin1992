@@ -3,7 +3,6 @@ version: 1.0.0
 main: de.nachbarschaft.Main
 api-version: 1.21
 authors: [ "DU" ]
-description: Minecraft Nachbarschaft Phase 6 System
 
 commands:
   kapitel:
@@ -11,6 +10,6 @@ commands:
   ritual:
     description: Führt gefährliche Rituale im Nether aus
   sanctum:
-    description: öffnet Zugang zum Sanctum der Admins
+    description: Öffnet Zugang zum Sanctum
   adminpalast:
     description: Teleportiert zum Admin Palast
