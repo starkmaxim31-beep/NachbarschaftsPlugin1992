@@ -46,11 +46,6 @@ public class Main extends JavaPlugin implements Listener {
 
         switch (cmd.getName().toLowerCase()) {
 
-            case "kapitel":
-                p.sendMessage(ChatColor.GOLD + "Kapitel System gestartet!");
-                // hier hängst du später dein echtes System rein
-                return true;
-
             case "sanctum":
                 p.teleport(new Location(w, 200, 100, 200));
                 p.sendMessage(ChatColor.DARK_PURPLE + "Du betrittst das Sanctum der Admins...");
@@ -81,75 +76,72 @@ public class Main extends JavaPlugin implements Listener {
                 return true;
 
             case "seelenstart":
-                p.sendMessage(ChatColor.AQUA + "Deine Seele beginnt zu erwachen...");
-                giveSoulWeapon(p);
-                return true;
-
-            case "prüfung":
-                p.sendMessage(ChatColor.BLUE + "Die Prüfung beginnt...");
-                p.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 200, 1));
-                return true;
-
-            case "adminstory":
-                p.sendMessage(ChatColor.LIGHT_PURPLE + "Die Geschichte der Admins entfaltet sich...");
-                return true;
-        }
-
-        return false;
+    if (p.hasMetadata("soulStarted")) {
+        p.sendMessage(ChatColor.RED + "Deine Seele wurde bereits erweckt.");
+        return true;
     }
 
-    // ===========================
-    //  SEELENWAFFE SYSTEM
-    // ===========================
-    private void giveSoulWeapon(Player p) {
-        ItemStack sword = new ItemStack(Material.NETHERITE_SWORD);
-        ItemMeta meta = sword.getItemMeta();
+    p.setMetadata("soulStarted", new FixedMetadataValue(this, true));
+    p.sendMessage(ChatColor.AQUA + "✨ Deine Seele beginnt sich zu öffnen...");
+    p.sendMessage(ChatColor.GRAY + "Du spürst Macht... aber sie ist noch nicht vollständig...");
 
-        meta.setDisplayName(ChatColor.AQUA + "Schlüsselschwert");
-        meta.setLore(Collections.singletonList(BIND_TAG + ":" + p.getUniqueId()));
+    p.playSound(p.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1f);
+    p.spawnParticle(Particle.END_ROD, p.getLocation(), 50, 1,1,1);
 
-        meta.addEnchant(Enchantment.SHARPNESS, 5, true);
-        meta.addEnchant(Enchantment.MENDING, 1, true);
+    return true;
 
-        meta.setUnbreakable(true);
 
-        sword.setItemMeta(meta);
-        p.getInventory().addItem(sword);
+case "waffe":
 
-        p.sendMessage(ChatColor.GREEN + "Deine Seelenwaffe wurde dir gebunden!");
+    if (p.hasMetadata("soulWeaponGiven")) {
+        p.sendMessage(ChatColor.RED + "Du besitzt deine Seelenwaffe bereits.");
+        return true;
     }
 
-    // Spieler kann sie NICHT droppen
-    @EventHandler
-    public void onDrop(PlayerDropItemEvent e) {
-        if (isBoundWeapon(e.getItemDrop().getItemStack(), e.getPlayer().getUniqueId())) {
-            e.setCancelled(true);
-            e.getPlayer().sendMessage(ChatColor.RED + "Diese Waffe gehört deiner Seele!");
-        }
+    giveSoulWeapon(p);
+    p.setMetadata("soulWeaponGiven", new FixedMetadataValue(this, true));
+    return true;
+
+
+case "prüfung":
+    p.sendMessage(ChatColor.BLUE + "⚔ Die Prüfung wurde gestartet!");
+    p.sendTitle(ChatColor.RED + "PRÜFUNG", ChatColor.GRAY + "Beweise deine Stärke!", 10, 70, 20);
+    p.playSound(p.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 1, 1);
+
+    p.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 400, 2));
+    p.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 400, 1));
+
+    return true;
+
+
+case "kapitel":
+
+    if (!p.hasMetadata("chapter")) {
+        p.setMetadata("chapter", new FixedMetadataValue(this, 1));
     }
 
-    // Spieler kann sie NICHT weitergeben
-    @EventHandler
-    public void onMove(InventoryClickEvent e) {
-        if (e.getCurrentItem() == null) return;
-        if (!(e.getWhoClicked() instanceof Player)) return;
+    int chapter = p.getMetadata("chapter").get(0).asInt();
 
-        Player p = (Player) e.getWhoClicked();
+    switch (chapter) {
 
-        if (isBoundWeapon(e.getCurrentItem(), p.getUniqueId())) {
-            e.setCancelled(true);
-            p.sendMessage(ChatColor.RED + "Diese Waffe ist an dich gebunden!");
-        }
+        case 1:
+            p.sendMessage(ChatColor.GOLD + "📖 Kapitel 1 – Ankunft in der Oberstadt");
+            p.sendMessage(ChatColor.GRAY + "Deine Geschichte beginnt…");
+            break;
+
+        case 2:
+            p.sendMessage(ChatColor.GOLD + "📖 Kapitel 2 – Die Unterstadt und ihre Geheimnisse");
+            break;
+
+        case 3:
+            p.sendMessage(ChatColor.GOLD + "📖 Kapitel 3 – Die ersten Admin-Hinweise erscheinen…");
+            break;
+
+        default:
+            p.sendMessage(ChatColor.GREEN + "🎉 Du hast alle Kapitel abgeschlossen!");
+            return true;
     }
 
-    private boolean isBoundWeapon(ItemStack item, UUID owner) {
-        if (item == null) return false;
-        if (!item.hasItemMeta()) return false;
-        if (!item.getItemMeta().hasLore()) return false;
+    p.setMetadata("chapter", new FixedMetadataValue(this, chapter + 1));
 
-        return item.getItemMeta().getLore().get(0).equals(BIND_TAG + ":" + owner);
-    }
-}
-
-
-
+    return true;
