@@ -1,17 +1,16 @@
 name: NachbarschaftsPlugin1992
 main: de.nachbarschaft.Main
-version: 1.0.0
+version: 1.0
 api-version: 1.21
 commands:
-  kapitel:
-  sanctum:
-  sanctumwarn:
-  ritual:
-  waffe:
-  adminform:
-  prüfung:
-  adminstory:
-  stadtcheck:
-  adminpalast:
-  seelenstart:
-
+  sanctum: {}
+  sanctumwarn: {}
+  stadtcheck: {}
+  adminpalast: {}
+  adminform: {}
+  seelenstart: {}
+  waffe: {}
+  prüfung: {}
+  kapitel: {}
+  adminstory: {}
+  adminhelp: {}
