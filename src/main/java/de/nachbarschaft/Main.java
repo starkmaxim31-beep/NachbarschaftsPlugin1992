@@ -106,20 +106,50 @@ public class Main extends JavaPlugin implements Listener {
                 int chapter = p.getMetadata("chapter").get(0).asInt();
 
                 switch (chapter) {
-                    case 1 -> {
-                        p.sendMessage(ChatColor.GOLD + "📖 Kapitel 1 – Ankunft in der Oberstadt");
-                        p.sendMessage(ChatColor.GRAY + "Deine Geschichte beginnt…");
-                    }
-                    case 2 -> p.sendMessage(ChatColor.GOLD + "📖 Kapitel 2 – Die Unterstadt und ihre Geheimnisse");
-                    case 3 -> p.sendMessage(ChatColor.GOLD + "📖 Kapitel 3 – Die ersten Admin-Hinweise erscheinen…");
-                    default -> {
-                        p.sendMessage(ChatColor.GREEN + "🎉 Du hast alle Kapitel abgeschlossen!");
-                        return true;
-                    }
-                }
+                  case "kapitel" -> {
+    if (!p.hasMetadata("chapter")) {
+        p.setMetadata("chapter", new FixedMetadataValue(this, 1));
+    }
 
-                p.setMetadata("chapter", new FixedMetadataValue(this, chapter + 1));
-            }
+    int chapter = p.getMetadata("chapter").get(0).asInt();
+
+    switch (chapter) {
+
+        case 1 -> {
+            p.sendMessage(ChatColor.GOLD + "📖 Kapitel 1 – Ankunft in der Oberstadt");
+            p.sendMessage(ChatColor.GRAY + "Deine Reise beginnt…");
+        }
+        case 2 -> p.sendMessage(ChatColor.GOLD + "📖 Kapitel 2 – Die Unterstadt erwacht…");
+        case 3 -> p.sendMessage(ChatColor.GOLD + "📖 Kapitel 3 – Der Professor bemerkt dich…");
+        case 4 -> p.sendMessage(ChatColor.GOLD + "📖 Kapitel 4 – Erste Hinweise auf Adminkräfte…");
+        case 5 -> p.sendMessage(ChatColor.GOLD + "📖 Kapitel 5 – Die Stadt beginnt zu flüstern…");
+        case 6 -> p.sendMessage(ChatColor.GOLD + "📖 Kapitel 6 – Der Gelbe Admin wird unruhig…");
+        case 7 -> p.sendMessage(ChatColor.GOLD + "📖 Kapitel 7 – Schatten erscheinen in der Unterstadt…");
+        case 8 -> p.sendMessage(ChatColor.GOLD + "📖 Kapitel 8 – Der mysteriöse Spieler beobachtet dich…");
+        case 9 -> p.sendMessage(ChatColor.GOLD + "📖 Kapitel 9 – Das Sanctum ruft nach dir…");
+        case 10 -> p.sendMessage(ChatColor.GOLD + "📖 Kapitel 10 – Der Admin Palast öffnet sich…");
+        case 11 -> p.sendMessage(ChatColor.GOLD + "📖 Kapitel 11 – Die Admins beginnen zu zweifeln…");
+        case 12 -> p.sendMessage(ChatColor.GOLD + "📖 Kapitel 12 – Die Rituale werden gefährlich…");
+        case 13 -> p.sendMessage(ChatColor.GOLD + "📖 Kapitel 13 – Der Professor hilft dir…");
+        case 14 -> p.sendMessage(ChatColor.GOLD + "📖 Kapitel 14 – Die Stadt gerät in Chaos…");
+        case 15 -> p.sendMessage(ChatColor.GOLD + "📖 Kapitel 15 – Die Seelenwaffen erwachen…");
+        case 16 -> p.sendMessage(ChatColor.GOLD + "📖 Kapitel 16 – Der Gelbe Admin kippt ins Böse…");
+        case 17 -> p.sendMessage(ChatColor.GOLD + "📖 Kapitel 17 – Der mysteriöse Spieler greift ein…");
+        case 18 -> p.sendMessage(ChatColor.GOLD + "📖 Kapitel 18 – Kampf um die Kontrolle…");
+        case 19 -> p.sendMessage(ChatColor.GOLD + "📖 Kapitel 19 – Finale Vorbereitung im Sanctum…");
+        case 20 -> {
+            p.sendMessage(ChatColor.DARK_PURPLE + "🔥 Kapitel 20 – Das große Finale beginnt!");
+            p.sendMessage(ChatColor.GRAY + "Die Welt hält den Atem an… dein Schicksal entscheidet alles.");
+        }
+
+        default -> {
+            p.sendMessage(ChatColor.GREEN + "🎉 Du hast ALLE Kapitel abgeschlossen!");
+            return true;
+        }
+    }
+
+    p.setMetadata("chapter", new FixedMetadataValue(this, chapter + 1));
+}
 
             case "adminstory" -> {
                 p.sendTitle(ChatColor.DARK_PURPLE + "Die Admins...",
