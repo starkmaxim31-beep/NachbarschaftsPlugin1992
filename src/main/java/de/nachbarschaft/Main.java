@@ -1,31 +1,26 @@
+
 package de.nachbarschaft;
 
 import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.Collections;
-import java.util.UUID;
 
 public class Main extends JavaPlugin implements Listener {
 
-    private final String BIND_TAG = "Seelenwaffe";
-
     @Override
     public void onEnable() {
-        getLogger().info("Nachbarschaft Plugin aktiv!");
         Bukkit.getPluginManager().registerEvents(this, this);
+        getLogger().info("Nachbarschaft Plugin aktiv!");
     }
 
     @Override
@@ -71,79 +66,84 @@ public class Main extends JavaPlugin implements Listener {
                 p.sendMessage(ChatColor.YELLOW + "Deine Adminkraft erwacht!");
                 return true;
 
-            case "waffe":
-                giveSoulWeapon(p);
+            case "seelenstart":
+                if (p.hasMetadata("soulStarted")) {
+                    p.sendMessage(ChatColor.RED + "Deine Seele wurde bereits erweckt.");
+                    return true;
+                }
+
+                p.setMetadata("soulStarted", new FixedMetadataValue(this, true));
+                p.sendMessage(ChatColor.AQUA + "✨ Deine Seele beginnt sich zu öffnen...");
+                p.sendMessage(ChatColor.GRAY + "Etwas Großes wartet auf dich...");
+
+                p.playSound(p.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1f);
+                p.spawnParticle(Particle.END_ROD, p.getLocation(), 50, 1, 1, 1);
                 return true;
 
-            case "seelenstart":
-    if (p.hasMetadata("soulStarted")) {
-        p.sendMessage(ChatColor.RED + "Deine Seele wurde bereits erweckt.");
+            case "waffe":
+                if (p.hasMetadata("soulWeaponGiven")) {
+                    p.sendMessage(ChatColor.RED + "Du besitzt deine Seelenwaffe bereits!");
+                    return true;
+                }
+
+                giveSoulWeapon(p);
+                p.setMetadata("soulWeaponGiven", new FixedMetadataValue(this, true));
+                return true;
+
+            case "prüfung":
+                p.sendMessage(ChatColor.BLUE + "⚔ Die Prüfung wurde gestartet!");
+                p.sendTitle(ChatColor.RED + "PRÜFUNG", ChatColor.GRAY + "Beweise deine Stärke!", 10, 70, 20);
+                p.playSound(p.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 1, 1);
+
+                p.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 400, 2));
+                p.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, 400, 1));
+                return true;
+
+            case "kapitel":
+
+                if (!p.hasMetadata("chapter")) {
+                    p.setMetadata("chapter", new FixedMetadataValue(this, 1));
+                }
+
+                int chapter = p.getMetadata("chapter").get(0).asInt();
+
+                switch (chapter) {
+
+                    case 1:
+                        p.sendMessage(ChatColor.GOLD + "📖 Kapitel 1 – Ankunft in der Oberstadt");
+                        break;
+
+                    case 2:
+                        p.sendMessage(ChatColor.GOLD + "📖 Kapitel 2 – Die Unterstadt und ihre Geheimnisse");
+                        break;
+
+                    case 3:
+                        p.sendMessage(ChatColor.GOLD + "📖 Kapitel 3 – Die ersten Admin-Hinweise erscheinen…");
+                        break;
+
+                    default:
+                        p.sendMessage(ChatColor.GREEN + "🎉 Du hast alle Kapitel abgeschlossen!");
+                        return true;
+                }
+
+                p.setMetadata("chapter", new FixedMetadataValue(this, chapter + 1));
+                return true;
+        }
+
         return true;
     }
 
-    p.setMetadata("soulStarted", new FixedMetadataValue(this, true));
-    p.sendMessage(ChatColor.AQUA + "✨ Deine Seele beginnt sich zu öffnen...");
-    p.sendMessage(ChatColor.GRAY + "Du spürst Macht... aber sie ist noch nicht vollständig...");
+    private void giveSoulWeapon(Player p) {
+        ItemStack sword = new ItemStack(Material.NETHERITE_SWORD);
+        ItemMeta meta = sword.getItemMeta();
 
-    p.playSound(p.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1f);
-    p.spawnParticle(Particle.END_ROD, p.getLocation(), 50, 1,1,1);
+        meta.setDisplayName(ChatColor.AQUA + "◆ Seelenklinge ◆");
+        meta.setLore(Collections.singletonList(ChatColor.GRAY + "Gebunden an: " + p.getName()));
+        meta.setUnbreakable(true);
 
-    return true;
+        sword.setItemMeta(meta);
+        p.getInventory().addItem(sword);
 
-
-case "waffe":
-
-    if (p.hasMetadata("soulWeaponGiven")) {
-        p.sendMessage(ChatColor.RED + "Du besitzt deine Seelenwaffe bereits.");
-        return true;
+        p.sendMessage(ChatColor.GREEN + "✔ Deine Seelenwaffe wurde dir gegeben!");
     }
-
-    giveSoulWeapon(p);
-    p.setMetadata("soulWeaponGiven", new FixedMetadataValue(this, true));
-    return true;
-
-
-case "prüfung":
-    p.sendMessage(ChatColor.BLUE + "⚔ Die Prüfung wurde gestartet!");
-    p.sendTitle(ChatColor.RED + "PRÜFUNG", ChatColor.GRAY + "Beweise deine Stärke!", 10, 70, 20);
-    p.playSound(p.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 1, 1);
-
-    p.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 400, 2));
-    p.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 400, 1));
-
-    return true;
-
-
-case "kapitel":
-
-    if (!p.hasMetadata("chapter")) {
-        p.setMetadata("chapter", new FixedMetadataValue(this, 1));
-    }
-
-    int chapter = p.getMetadata("chapter").get(0).asInt();
-
-    switch (chapter) {
-
-        case 1:
-            p.sendMessage(ChatColor.GOLD + "📖 Kapitel 1 – Ankunft in der Oberstadt");
-            p.sendMessage(ChatColor.GRAY + "Deine Geschichte beginnt…");
-            break;
-
-        case 2:
-            p.sendMessage(ChatColor.GOLD + "📖 Kapitel 2 – Die Unterstadt und ihre Geheimnisse");
-            break;
-
-        case 3:
-            p.sendMessage(ChatColor.GOLD + "📖 Kapitel 3 – Die ersten Admin-Hinweise erscheinen…");
-            break;
-
-        default:
-            p.sendMessage(ChatColor.GREEN + "🎉 Du hast alle Kapitel abgeschlossen!");
-            return true;
-    }
-
-    p.setMetadata("chapter", new FixedMetadataValue(this, chapter + 1));
-
-    return true;
-  }
 }
