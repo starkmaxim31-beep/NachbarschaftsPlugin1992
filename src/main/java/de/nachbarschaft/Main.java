@@ -179,6 +179,13 @@ public class Main extends JavaPlugin implements Listener {
 
                 p.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 400, 2));
                 p.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, 400, 1));
+           
+            case "adminstory":
+                p.sendTitle(ChatColor.DARK_PURPLE + "Die Admins...", ChatColor.GRAY + "etwas stimmt nicht...", 10, 80, 10);
+                p.sendMessage(ChatColor.DARK_PURPLE + "⚡ Du spürst eine Macht in der Welt...");
+                p.sendMessage(ChatColor.GRAY + "Gerüchte erzählen von einem Ort namens " + ChatColor.YELLOW + "Sanctum der Admins");
+                p.playSound(p.getLocation(), Sound.AMBIENT_CAVE, 1, 1);
+   
             }
         }
 
