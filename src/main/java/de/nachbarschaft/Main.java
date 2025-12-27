@@ -150,46 +150,46 @@ public class Main extends JavaPlugin implements Listener {
                 p.sendMessage(ChatColor.YELLOW + "🔥 Deine Adminkraft erwacht!");
             }
 
-            case "seelenstart" -> {
-                if (p.hasMetadata("soulStarted")) {
-                    p.sendMessage(ChatColor.RED + "Deine Seele wurde bereits erweckt.");
-                    return true;
-                }
-
-                p.setMetadata("soulStarted", new FixedMetadataValue(this, true));
-                p.playSound(p.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, 1);
-                p.spawnParticle(Particle.END_ROD, p.getLocation(), 50, 1, 1, 1);
-                p.sendMessage(ChatColor.AQUA + "✨ Deine Seele beginnt sich zu öffnen…");
-            }
-
-            case "waffe" -> {
-                if (p.hasMetadata("soulWeaponGiven")) {
-                    p.sendMessage(ChatColor.RED + "Du besitzt deine Seelenwaffe bereits!");
-                    return true;
-                }
-
-                giveSoulWeapon(p);
-                p.setMetadata("soulWeaponGiven", new FixedMetadataValue(this, true));
-            }
-
-            case "prüfung" -> {
-                p.sendMessage(ChatColor.BLUE + "⚔ Die Prüfung wurde gestartet!");
-                p.sendTitle(ChatColor.RED + "PRÜFUNG", ChatColor.GRAY + "Beweise deine Stärke!", 10, 70, 20);
-                p.playSound(p.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 1, 1);
-
-                p.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 400, 2));
-                p.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, 400, 1));
-           
-            case "adminstory":
-                p.sendTitle(ChatColor.DARK_PURPLE + "Die Admins...", ChatColor.GRAY + "etwas stimmt nicht...", 10, 80, 10);
-                p.sendMessage(ChatColor.DARK_PURPLE + "⚡ Du spürst eine Macht in der Welt...");
-                p.sendMessage(ChatColor.GRAY + "Gerüchte erzählen von einem Ort namens " + ChatColor.YELLOW + "Sanctum der Admins");
-                p.playSound(p.getLocation(), Sound.AMBIENT_CAVE, 1, 1);
-   
-            }
-        }
-
+case "seelenstart" -> {
+    if (p.hasMetadata("soulStarted")) {
+        p.sendMessage(ChatColor.RED + "Deine Seele wurde bereits erweckt.");
         return true;
+    }
+
+    p.setMetadata("soulStarted", new FixedMetadataValue(this, true));
+    p.sendMessage(ChatColor.AQUA + "✨ Deine Seele beginnt sich zu öffnen…");
+
+    p.playSound(p.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1f);
+    p.spawnParticle(Particle.END_ROD, p.getLocation(), 50, 1, 1, 1);
+}
+
+case "waffe" -> {
+    if (p.hasMetadata("soulWeaponGiven")) {
+        p.sendMessage(ChatColor.RED + "Du besitzt deine Seelenwaffe bereits!");
+        return true;
+    }
+
+    giveSoulWeapon(p);
+    p.setMetadata("soulWeaponGiven", new FixedMetadataValue(this, true));
+}
+
+case "prüfung" -> {
+    p.sendMessage(ChatColor.BLUE + "⚔ Die Prüfung wurde gestartet!");
+    p.sendTitle(ChatColor.RED + "PRÜFUNG", ChatColor.GRAY + "Beweise deine Stärke!", 10, 70, 20);
+    p.playSound(p.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 1, 1);
+
+    p.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 400, 2));
+    p.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, 400, 1));
+}
+
+case "adminstory" -> {
+    p.sendTitle(ChatColor.DARK_PURPLE + "Die Admins...",
+            ChatColor.GRAY + "etwas stimmt nicht...", 10, 80, 10);
+    p.sendMessage(ChatColor.DARK_PURPLE + "⚡ Du spürst eine Macht in der Welt...");
+    p.sendMessage(ChatColor.GRAY + "Gerüchte erzählen von einem Ort namens "
+            + ChatColor.YELLOW + "Sanctum der Admins");
+    p.playSound(p.getLocation(), Sound.AMBIENT_CAVE, 1, 1);
+    return true;
     }
 
     private void giveSoulWeapon(Player p) {
