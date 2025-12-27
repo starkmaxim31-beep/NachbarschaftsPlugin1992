@@ -3,24 +3,23 @@ package de.nachbarschaft;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scoreboard.*;
-
-import java.util.HashMap;
-import java.util.UUID;
 
 public class Main extends JavaPlugin {
 
-    private final HashMap<UUID, Integer> kapitelFortschritt = new HashMap<>();
-
     @Override
     public void onEnable() {
-        getLogger().info("NachbarschaftsPlugin Phase 6 aktiviert!");
+        getLogger().info("NachbarschaftsPlugin aktiviert!");
+
+        // Falls später Config benötigt wird
+        saveDefaultConfig();
     }
 
     @Override
@@ -28,109 +27,63 @@ public class Main extends JavaPlugin {
         getLogger().info("NachbarschaftsPlugin deaktiviert!");
     }
 
-    // ----------------------------------------------------------
-    // KAPITEL HUD SYSTEM
-    // ----------------------------------------------------------
-    private void startKapitelHUD(Player p) {
-        ScoreboardManager manager = Bukkit.getScoreboardManager();
-        Scoreboard board = manager.getNewScoreboard();
-        Objective obj = board.registerNewObjective("kapitel", Criteria.DUMMY, ChatColor.GOLD + "Kapitel");
-        obj.setDisplaySlot(DisplaySlot.SIDEBAR);
-
-        int fortschritt = kapitelFortschritt.getOrDefault(p.getUniqueId(), 1);
-
-        obj.getScore(ChatColor.YELLOW + "Aktuelles Kapitel:").setScore(3);
-        obj.getScore(ChatColor.GREEN + "Kapitel " + fortschritt).setScore(2);
-        obj.getScore(ChatColor.GRAY + "Story aktiv!").setScore(1);
-
-        p.setScoreboard(board);
-    }
-
-    // ----------------------------------------------------------
-    // COMMANDS
-    // ----------------------------------------------------------
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
         if (!(sender instanceof Player)) {
-            sender.sendMessage("Nur Spieler können das benutzen.");
+            sender.sendMessage("Dieser Befehl ist nur für Spieler.");
             return true;
         }
 
         Player p = (Player) sender;
 
-        // ------------------ /kapitel ------------------
-        if (cmd.getName().equalsIgnoreCase("kapitel")) {
+        switch (cmd.getName().toLowerCase()) {
 
-            kapitelFortschritt.putIfAbsent(p.getUniqueId(), 1);
-            startKapitelHUD(p);
-
-            p.sendMessage(ChatColor.GOLD + "--------------------------------");
-            p.sendMessage(ChatColor.AQUA + "Kapitel System aktiviert!");
-            p.sendMessage(ChatColor.GREEN + "Du bist aktuell in Kapitel: " +
-                    kapitelFortschritt.get(p.getUniqueId()));
-            p.sendMessage(ChatColor.GRAY + "Fortschritt folgt durch Story!");
-            p.sendMessage(ChatColor.GOLD + "--------------------------------");
-            return true;
-        }
-
-        // ------------------ /sanctum ------------------
-        if (cmd.getName().equalsIgnoreCase("sanctum")) {
-            World world = Bukkit.getWorld("world");
-
-            if (world == null) {
-                p.sendMessage(ChatColor.RED + "Welt konnte nicht gefunden werden!");
+            case "kapitel":
+                p.sendMessage(ChatColor.GOLD + "Kapitel System aktiv!");
                 return true;
-            }
 
-            Location sanctum = new Location(world, 0, 150, 0);
-            p.teleport(sanctum);
+            case "sanctum":
+                p.sendMessage(ChatColor.DARK_PURPLE + "Sanctum System aktiviert!");
+                return true;
 
-            p.sendMessage(ChatColor.DARK_PURPLE + "------------------------------------");
-            p.sendMessage(ChatColor.LIGHT_PURPLE + "Du betrittst das Sanctum der Admins...");
-            p.sendMessage(ChatColor.GRAY + "Zwischen Realität und Macht.");
-            p.sendMessage(ChatColor.DARK_PURPLE + "------------------------------------");
+            case "ritual":
+                p.sendMessage(ChatColor.RED + "Ritual gestartet!");
+                return true;
 
-            return true;
-        }
+            case "waffe":
+                ItemStack sword = new ItemStack(Material.NETHERITE_SWORD);
+                ItemMeta meta = sword.getItemMeta();
+                meta.setDisplayName(ChatColor.AQUA + "Schlüsselschwert");
+                sword.setItemMeta(meta);
+                p.getInventory().addItem(sword);
+                p.sendMessage(ChatColor.GREEN + "Du hast deine Seelenwaffe erhalten!");
+                return true;
 
-        // ------------------ /prüfung ------------------
-        if (cmd.getName().equalsIgnoreCase("prüfung")) {
+            case "adminform":
+                p.sendMessage(ChatColor.YELLOW + "Admin Transformation gestartet!");
+                p.setHealth(20);
+                p.setAllowFlight(true);
+                return true;
 
-            p.sendMessage(ChatColor.RED + "Die Adminprüfung beginnt...");
-            p.sendMessage(ChatColor.GRAY + "Du wirst getestet... bestehe die Prüfung!");
+            case "prüfung":
+                p.sendMessage(ChatColor.BLUE + "Prüfung gestartet!");
+                return true;
 
-            new BukkitRunnable() {
-                int timer = 5;
+            case "adminstory":
+                p.sendMessage(ChatColor.LIGHT_PURPLE + "Die Geschichte der Admins beginnt…");
+                return true;
 
-                @Override
-                public void run() {
-                    if (timer == 0) {
-                        p.sendMessage(ChatColor.GREEN + "✔ Prüfung bestanden!");
-                        kapitelFortschritt.put(p.getUniqueId(), 6);
-                        startKapitelHUD(p);
-                        cancel();
-                        return;
-                    }
+            case "stadtcheck":
+                p.sendMessage(ChatColor.GREEN + "Stadtstatus überprüft!");
+                return true;
 
-                    p.sendTitle(
-                            ChatColor.GOLD + "Prüfung",
-                            ChatColor.YELLOW + "Noch " + timer + " Sekunden...",
-                            10, 20, 10
-                    );
-
-                    timer--;
-                }
-
-            }.runTaskTimer(this, 0, 20);
-
-            return true;
-        }
-
-        // ------------------ /nachbarschafttest ------------------
-        if (cmd.getName().equalsIgnoreCase("nachbarschafttest")) {
-            p.sendMessage(ChatColor.GREEN + "Plugin läuft. Commands aktiv.");
-            return true;
+            case "adminpalast":
+                World w = Bukkit.getWorld("world");
+                Location loc = new Location(w, 0, 100, 0);
+                p.teleport(loc);
+                p.sendMessage(ChatColor.GOLD + "Willkommen im Admin Palast!");
+                return true;
         }
 
         return false;
