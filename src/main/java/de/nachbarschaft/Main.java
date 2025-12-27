@@ -145,5 +145,5 @@ case "kapitel":
     p.setMetadata("chapter", new FixedMetadataValue(this, chapter + 1));
 
     return true;
-   }
+  }
 }
