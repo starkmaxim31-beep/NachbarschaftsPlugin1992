@@ -185,4 +185,26 @@ public void onEnable() {
 
         p.sendMessage(ChatColor.GREEN + "✔ Deine Seelenwaffe wurde dir gegeben!");
     }
+  private void createNPCs() {
+
+    // Professor
+    CitizensAPI.getNPCRegistry().createNPC(
+            EntityType.PLAYER,
+            ChatColor.YELLOW + "Professor"
+    ).spawn(new Location(Bukkit.getWorld("world"), 120, 80, 95));
+
+    // Gelber Admin
+    CitizensAPI.getNPCRegistry().createNPC(
+            EntityType.PLAYER,
+            ChatColor.GOLD + "GelberAdmin"
+    ).spawn(new Location(Bukkit.getWorld("world"), 105, 80, 110));
+
+    // Stadtwache
+    CitizensAPI.getNPCRegistry().createNPC(
+            EntityType.PLAYER,
+            ChatColor.RED + "Stadtwache"
+    ).spawn(new Location(Bukkit.getWorld("world"), 100, 80, 100));
 }
+
+}
+
