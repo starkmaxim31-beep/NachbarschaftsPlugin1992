@@ -18,17 +18,18 @@ import java.util.Arrays;
 
 public class Main extends JavaPlugin implements Listener {
 
-  @Override
+ @Override
 public void onEnable() {
-    getLogger().info("Nachbarschaft Plugin aktiv!");
-    Bukkit.getPluginManager().registerEvents(this, this);
 
     if (Bukkit.getPluginManager().getPlugin("Citizens") == null) {
-        getLogger().severe("❌ Citizens NICHT gefunden! NPC System deaktiviert!");
+        getLogger().severe("CITIZENS NICHT GEFUNDEN -> NPCS DEAKTIVIERT");
         return;
     }
 
-    createNPCs();
+    getLogger().info("Nachbarschaft Plugin aktiv!");
+    Bukkit.getPluginManager().registerEvents(this, this);
+
+    createNPCs(); // <- nur wenn Citizens sicher geladen ist
 }
 
     @Override
