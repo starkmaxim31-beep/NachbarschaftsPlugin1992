@@ -1,17 +1,11 @@
 name: NachbarschaftsPlugin1992
-main: de.nachbarschaft.Main
 version: 1.0
+main: de.nachbarschaft.Main
 api-version: 1.21
+
 commands:
-  sanctum: {}
-  sanctumwarn: {}
-  stadtcheck: {}
-  adminpalast: {}
-  adminform: {}
-  seelenstart: {}
-  waffe: {}
-  prüfung: {}
-  kapitel: {}
-  adminstory: {}
-  adminhelp: {}
-depend: [Citizens]
+  chapter:
+    description: Kapitel setzen
+  soul:
+    description: Seelenwaffen erhalten
+
