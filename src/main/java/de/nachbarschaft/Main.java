@@ -7,30 +7,20 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.metadata.FixedMetadataValue;
-import net.citizensnpcs.api.CitizensAPI;
-import org.bukkit.entity.EntityType;
 
 import java.util.Arrays;
 
 public class Main extends JavaPlugin implements Listener {
 
- @Override
-public void onEnable() {
-
-    if (Bukkit.getPluginManager().getPlugin("Citizens") == null) {
-        getLogger().severe("CITIZENS NICHT GEFUNDEN -> NPCS DEAKTIVIERT");
-        return;
+    @Override
+    public void onEnable() {
+        getLogger().info("Nachbarschaft Plugin aktiv!");
+        Bukkit.getPluginManager().registerEvents(this, this);
     }
-
-    getLogger().info("Nachbarschaft Plugin aktiv!");
-    Bukkit.getPluginManager().registerEvents(this, this);
-
-    createNPCs(); // <- nur wenn Citizens sicher geladen ist
-}
 
     @Override
     public void onDisable() {
@@ -40,13 +30,16 @@ public void onEnable() {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
-        if (!(sender instanceof Player)) {
+        if (!(sender instanceof Player p)) {
             sender.sendMessage("Nur Spieler!");
             return true;
         }
 
-        Player p = (Player) sender;
         World w = Bukkit.getWorld("world");
+        if (w == null) {
+            p.sendMessage(ChatColor.RED + "Welt 'world' nicht gefunden!");
+            return true;
+        }
 
         switch (cmd.getName().toLowerCase()) {
 
@@ -102,8 +95,8 @@ public void onEnable() {
             case "prüfung" -> {
                 p.sendMessage(ChatColor.BLUE + "⚔ Die Prüfung wurde gestartet!");
                 p.sendTitle(ChatColor.RED + "PRÜFUNG", ChatColor.GRAY + "Beweise deine Stärke!", 10, 70, 20);
-                p.playSound(p.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 1, 1);
 
+                p.playSound(p.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 1, 1);
                 p.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 400, 2));
                 p.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, 400, 1));
             }
@@ -115,34 +108,35 @@ public void onEnable() {
 
                 int chapter = p.getMetadata("chapter").get(0).asInt();
 
-                switch (chapter) {
-                    case 1 -> p.sendMessage(ChatColor.GOLD + "📖 Kapitel 1 – Ankunft in der Oberstadt");
-                    case 2 -> p.sendMessage(ChatColor.GOLD + "📖 Kapitel 2 – Die Unterstadt erwacht…");
-                    case 3 -> p.sendMessage(ChatColor.GOLD + "📖 Kapitel 3 – Der Professor bemerkt dich…");
-                    case 4 -> p.sendMessage(ChatColor.GOLD + "📖 Kapitel 4 – Erste Hinweise auf Adminkräfte…");
-                    case 5 -> p.sendMessage(ChatColor.GOLD + "📖 Kapitel 5 – Die Stadt beginnt zu flüstern…");
-                    case 6 -> p.sendMessage(ChatColor.GOLD + "📖 Kapitel 6 – Der Gelbe Admin wird unruhig…");
-                    case 7 -> p.sendMessage(ChatColor.GOLD + "📖 Kapitel 7 – Schatten erscheinen in der Unterstadt…");
-                    case 8 -> p.sendMessage(ChatColor.GOLD + "📖 Kapitel 8 – Der mysteriöse Spieler beobachtet dich…");
-                    case 9 -> p.sendMessage(ChatColor.GOLD + "📖 Kapitel 9 – Das Sanctum ruft nach dir…");
-                    case 10 -> p.sendMessage(ChatColor.GOLD + "📖 Kapitel 10 – Der Admin Palast öffnet sich…");
-                    case 11 -> p.sendMessage(ChatColor.GOLD + "📖 Kapitel 11 – Die Admins beginnen zu zweifeln…");
-                    case 12 -> p.sendMessage(ChatColor.GOLD + "📖 Kapitel 12 – Die Rituale werden gefährlich…");
-                    case 13 -> p.sendMessage(ChatColor.GOLD + "📖 Kapitel 13 – Der Professor hilft dir…");
-                    case 14 -> p.sendMessage(ChatColor.GOLD + "📖 Kapitel 14 – Die Stadt gerät in Chaos…");
-                    case 15 -> p.sendMessage(ChatColor.GOLD + "📖 Kapitel 15 – Die Seelenwaffen erwachen…");
-                    case 16 -> p.sendMessage(ChatColor.GOLD + "📖 Kapitel 16 – Der gelbe Admin wird böse…");
-                    case 17 -> p.sendMessage(ChatColor.GOLD + "📖 Kapitel 17 – Der mysteriöse Spieler greift ein…");
-                    case 18 -> p.sendMessage(ChatColor.GOLD + "📖 Kapitel 18 – Kampf um die Kontrolle…");
-                    case 19 -> p.sendMessage(ChatColor.GOLD + "📖 Kapitel 19 – Finale Vorbereitung im Sanctum…");
-                    case 20 -> p.sendMessage(ChatColor.DARK_PURPLE + "🔥 Kapitel 20 – Das große Finale beginnt!");
-                    default -> {
-                        p.sendMessage(ChatColor.GREEN + "🎉 Du hast alles geschafft!");
-                        return true;
-                    }
-                }
+                String[] chapters = {
+                        "Ankunft in der Oberstadt",
+                        "Die Unterstadt erwacht…",
+                        "Der Professor bemerkt dich…",
+                        "Erste Hinweise auf Adminkräfte…",
+                        "Die Stadt beginnt zu flüstern…",
+                        "Der Gelbe Admin wird unruhig…",
+                        "Schatten in der Unterstadt…",
+                        "Der mysteriöse Spieler…",
+                        "Das Sanctum ruft…",
+                        "Der Admin Palast öffnet sich…",
+                        "Admins zweifeln…",
+                        "Gefährliche Rituale…",
+                        "Der Professor hilft…",
+                        "Chaos in der Stadt…",
+                        "Seelenwaffen erwachen…",
+                        "Gelber Admin fällt…",
+                        "Der Spieler greift ein…",
+                        "Kampf um Kontrolle…",
+                        "Finale Vorbereitung…",
+                        "🔥 DAS ENDE BEGINNT 🔥"
+                };
 
-                p.setMetadata("chapter", new FixedMetadataValue(this, chapter + 1));
+                if (chapter <= chapters.length) {
+                    p.sendMessage(ChatColor.GOLD + "📖 Kapitel " + chapter + " – " + chapters[chapter - 1]);
+                    p.setMetadata("chapter", new FixedMetadataValue(this, chapter + 1));
+                } else {
+                    p.sendMessage(ChatColor.GREEN + "🎉 Du hast alle Kapitel abgeschlossen!");
+                }
             }
 
             case "adminstory" -> {
@@ -151,19 +145,18 @@ public void onEnable() {
                         10, 80, 10);
 
                 p.sendMessage(ChatColor.DARK_PURPLE + "⚡ Du spürst eine Macht in der Welt...");
-                p.sendMessage(ChatColor.GRAY + "Gerüchte erzählen von einem Ort namens "
-                        + ChatColor.YELLOW + "Sanctum der Admins");
+                p.sendMessage(ChatColor.GRAY + "Gerüchte sprechen vom " + ChatColor.YELLOW + "Sanctum der Admins");
 
                 p.playSound(p.getLocation(), Sound.AMBIENT_CAVE, 1, 1);
             }
 
             case "adminhelp" -> {
                 p.sendMessage(ChatColor.YELLOW + "==== ADMIN HILFE ====");
-                p.sendMessage("/adminstory - startet Admin Story");
-                p.sendMessage("/sanctum - teleport Sanctum");
-                p.sendMessage("/prüfung - Prüfung starten");
+                p.sendMessage("/adminstory - startet Story");
+                p.sendMessage("/sanctum - teleport");
+                p.sendMessage("/prüfung - Prüfung");
                 p.sendMessage("/waffe - Seelenwaffe");
-                p.sendMessage("/kapitel - Story Kapitel");
+                p.sendMessage("/kapitel - Kapitel");
             }
         }
 
@@ -186,26 +179,5 @@ public void onEnable() {
 
         p.sendMessage(ChatColor.GREEN + "✔ Deine Seelenwaffe wurde dir gegeben!");
     }
-  private void createNPCs() {
-
-    // Professor
-    CitizensAPI.getNPCRegistry().createNPC(
-            EntityType.PLAYER,
-            ChatColor.YELLOW + "Professor"
-    ).spawn(new Location(Bukkit.getWorld("world"), 120, 80, 95));
-
-    // Gelber Admin
-    CitizensAPI.getNPCRegistry().createNPC(
-            EntityType.PLAYER,
-            ChatColor.GOLD + "GelberAdmin"
-    ).spawn(new Location(Bukkit.getWorld("world"), 105, 80, 110));
-
-    // Stadtwache
-    CitizensAPI.getNPCRegistry().createNPC(
-            EntityType.PLAYER,
-            ChatColor.RED + "Stadtwache"
-    ).spawn(new Location(Bukkit.getWorld("world"), 100, 80, 100));
-}
-
 }
 
