@@ -1,11 +1,28 @@
-name: NachbarschaftsPlugin1992
+name: Nachbarschaft
 version: 1.0
 main: de.nachbarschaft.Main
 api-version: 1.21
 
 commands:
-  chapter:
-    description: Kapitel setzen
-  soul:
-    description: Seelenwaffen erhalten
-
+  sanctum:
+    description: Teleport ins Sanctum
+  sanctumwarn:
+    description: Sanctum Warnung
+  stadtcheck:
+    description: Zeigt Stadtinfos
+  adminpalast:
+    description: Teleport Admin Palast
+  adminform:
+    description: Admin Kraft aktivieren
+  seelenstart:
+    description: Startet Seelenpfad
+  waffe:
+    description: Gibt Seelenwaffe
+  prüfung:
+    description: Startet Prüfung
+  kapitel:
+    description: Story Kapitel
+  adminstory:
+    description: Startet Admin Story
+  adminhelp:
+    description: Hilfe
