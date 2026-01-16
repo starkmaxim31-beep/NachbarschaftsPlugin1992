@@ -3,11 +3,11 @@ package de.nachbarschaft;
 import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -17,28 +17,25 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
-import java.util.Arrays;
+import java.util.*;
 
 public class Main extends JavaPlugin implements Listener {
 
+    private final Map<UUID, Long> dashCooldown = new HashMap<>();
+
     @Override
     public void onEnable() {
-        getLogger().info("Nachbarschaft Plugin aktiv!");
         Bukkit.getPluginManager().registerEvents(this, this);
+        getLogger().info("Nachbarschaft Plugin aktiv (ohne Citizens)");
     }
 
-    @Override
-    public void onDisable() {
-        getLogger().info("Nachbarschaft Plugin deaktiviert!");
-    }
-
-    // ================= COMMANDS =================
+    /* ---------------- COMMANDS ---------------- */
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
         if (!(sender instanceof Player p)) {
-            sender.sendMessage("Nur Spieler!");
+            sender.sendMessage("Nur Spieler.");
             return true;
         }
 
@@ -46,165 +43,151 @@ public class Main extends JavaPlugin implements Listener {
 
         switch (cmd.getName().toLowerCase()) {
 
+            case "waffe" -> giveSoulWeapon(p);
+
+            case "kapitel" -> playNextChapter(p, w);
+
             case "sanctum" -> {
                 p.teleport(new Location(w, 200, 100, 200));
-                p.sendMessage(ChatColor.DARK_PURPLE + "Du betrittst das Sanctum der Admins...");
+                p.sendMessage(ChatColor.DARK_PURPLE + "Du betrittst das Sanctum der Admins…");
+                p.playSound(p.getLocation(), Sound.BLOCK_PORTAL_TRAVEL, 1, 1);
             }
 
             case "adminpalast" -> {
                 p.teleport(new Location(w, 0, 120, 0));
-                p.sendMessage(ChatColor.YELLOW + "Willkommen im Admin Palast!");
+                p.sendMessage(ChatColor.GOLD + "Der Admin-Palast erhebt sich über dir.");
+                p.playSound(p.getLocation(), Sound.BLOCK_BEACON_ACTIVATE, 1, 1);
             }
-
-            case "seelenstart" -> {
-                if (p.hasMetadata("soulStarted")) {
-                    p.sendMessage(ChatColor.RED + "Deine Seele ist bereits erwacht.");
-                    return true;
-                }
-
-                p.setMetadata("soulStarted", new FixedMetadataValue(this, true));
-                p.sendMessage(ChatColor.AQUA + "✨ Deine Seele beginnt zu erwachen...");
-                p.playSound(p.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, 1);
-                p.spawnParticle(Particle.END_ROD, p.getLocation(), 60, 1, 1, 1);
-            }
-
-            case "waffe" -> giveSoulSword(p);
-
-            case "seelenbogen" -> giveSoulBow(p);
-
-            case "prüfung" -> {
-                p.sendTitle(ChatColor.RED + "PRÜFUNG", ChatColor.GRAY + "Beweise deine Stärke", 10, 70, 20);
-                p.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 300, 2));
-                p.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, 300, 1));
-            }
-
-            case "kapitel" -> handleChapter(p);
 
             case "adminhelp" -> {
-                p.sendMessage(ChatColor.YELLOW + "==== ADMIN HILFE ====");
-                p.sendMessage("/sanctum");
-                p.sendMessage("/adminpalast");
-                p.sendMessage("/seelenstart");
-                p.sendMessage("/waffe");
-                p.sendMessage("/seelenbogen");
-                p.sendMessage("/prüfung");
-                p.sendMessage("/kapitel");
+                p.sendMessage(ChatColor.YELLOW + "=== ADMIN HILFE ===");
+                p.sendMessage("/waffe – Seelenwaffe erhalten");
+                p.sendMessage("/kapitel – Story fortsetzen");
+                p.sendMessage("/sanctum – Sanctum betreten");
+                p.sendMessage("/adminpalast – Adminpalast");
             }
         }
         return true;
     }
 
-    // ================= SEELENWAFFEN =================
+    /* ---------------- SEELENWAFFE ---------------- */
 
-    private void giveSoulSword(Player p) {
-        if (p.hasMetadata("soulSword")) {
-            p.sendMessage(ChatColor.RED + "Du besitzt diese Waffe bereits.");
-            return;
-        }
+    private void giveSoulWeapon(Player p) {
 
         ItemStack sword = new ItemStack(Material.NETHERITE_SWORD);
         ItemMeta meta = sword.getItemMeta();
 
         meta.setDisplayName(ChatColor.AQUA + "◆ Seelenklinge ◆");
-        meta.setLore(Arrays.asList(
+        meta.setLore(List.of(
                 ChatColor.GRAY + "Gebunden an: " + p.getName(),
-                ChatColor.DARK_PURPLE + "Dash • Multi-Hit • Luftangriff"
+                ChatColor.DARK_PURPLE + "Dash-Angriff · Seelenmacht"
         ));
         meta.setUnbreakable(true);
 
         sword.setItemMeta(meta);
         p.getInventory().addItem(sword);
-        p.setMetadata("soulSword", new FixedMetadataValue(this, true));
 
-        p.sendMessage(ChatColor.GREEN + "✔ Die Seelenklinge akzeptiert dich.");
+        p.sendMessage(ChatColor.GREEN + "Deine Seelenklinge erwacht.");
+        p.playSound(p.getLocation(), Sound.ITEM_TRIDENT_THUNDER, 1, 1);
     }
 
-    private void giveSoulBow(Player p) {
-        ItemStack bow = new ItemStack(Material.BOW);
-        ItemMeta meta = bow.getItemMeta();
+    /* ---------------- DASH ---------------- */
 
-        meta.setDisplayName(ChatColor.LIGHT_PURPLE + "✦ Seelenbogen ✦");
-        meta.setLore(Arrays.asList(
-                ChatColor.GRAY + "Gebunden an: " + p.getName(),
-                ChatColor.DARK_PURPLE + "Pfeilregen • Flug • Superskill"
-        ));
-        meta.setUnbreakable(true);
-
-        bow.setItemMeta(meta);
-        p.getInventory().addItem(bow);
-
-        p.sendMessage(ChatColor.AQUA + "🏹 Der Seelenbogen erwacht...");
-    }
-
-    // ================= EVENTS =================
-
-    // DASH + LUFTANGRIFF
     @EventHandler
-    public void onSwordUse(PlayerInteractEvent e) {
+    public void onRightClick(PlayerInteractEvent e) {
+
         Player p = e.getPlayer();
         ItemStack item = p.getInventory().getItemInMainHand();
 
         if (item.getType() != Material.NETHERITE_SWORD) return;
+        if (!item.hasItemMeta()) return;
         if (!item.getItemMeta().getDisplayName().contains("Seelenklinge")) return;
 
-        Vector v = p.getLocation().getDirection().multiply(1.4);
-        p.setVelocity(v);
-        p.playSound(p.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 1, 1);
-    }
-
-    // MULTI HIT
-    @EventHandler
-    public void onMultiHit(EntityDamageByEntityEvent e) {
-        if (!(e.getDamager() instanceof Player p)) return;
-
-        ItemStack item = p.getInventory().getItemInMainHand();
-        if (item.getType() != Material.NETHERITE_SWORD) return;
-        if (!item.getItemMeta().getDisplayName().contains("Seelenklinge")) return;
-
-        e.setDamage(e.getDamage() * 3);
-    }
-
-    // PFEILREGEN
-    @EventHandler
-    public void onBowSkill(PlayerInteractEvent e) {
-        Player p = e.getPlayer();
-        ItemStack item = p.getInventory().getItemInMainHand();
-
-        if (!p.isSneaking()) return;
-        if (item.getType() != Material.BOW) return;
-        if (!item.getItemMeta().getDisplayName().contains("Seelenbogen")) return;
-
-        Location target = p.getTargetBlock(null, 30).getLocation();
-
-        for (int i = 0; i < 25; i++) {
-            Arrow arrow = target.getWorld().spawnArrow(
-                    target.clone().add(Math.random()*6-3, 10, Math.random()*6-3),
-                    new Vector(0, -1, 0),
-                    1.5f, 0
-            );
-            arrow.setShooter(p);
+        // ❌ kein Luft-Dash
+        if (!p.isOnGround()) {
+            p.sendMessage(ChatColor.RED + "Der Dash funktioniert nur am Boden.");
+            return;
         }
 
-        p.sendMessage(ChatColor.DARK_PURPLE + "☄ Pfeilregen entfesselt!");
+        long now = System.currentTimeMillis();
+        if (dashCooldown.containsKey(p.getUniqueId())
+                && now - dashCooldown.get(p.getUniqueId()) < 3000) {
+            p.sendMessage(ChatColor.GRAY + "Die Seelenklinge lädt sich neu…");
+            return;
+        }
 
-        // FLUG 3 SEKUNDEN
-        p.setAllowFlight(true);
-        p.setFlying(true);
+        dashCooldown.put(p.getUniqueId(), now);
 
-        Bukkit.getScheduler().runTaskLater(this, () -> {
-            p.setFlying(false);
-            p.setAllowFlight(false);
-        }, 60L);
+        Vector dir = p.getLocation().getDirection().normalize();
+        p.setVelocity(dir.multiply(2.2));
+
+        p.playSound(p.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 1, 1);
+        p.spawnParticle(Particle.CRIT, p.getLocation(), 30, 0.5, 0.5, 0.5);
+
+        // Treffer während Dash
+        Bukkit.getScheduler().runTaskTimer(this, task -> {
+
+            for (Entity ent : p.getNearbyEntities(1.5, 1.5, 1.5)) {
+                if (ent instanceof LivingEntity le && ent != p) {
+                    le.damage(6.0, p);
+                    le.setVelocity(le.getLocation().toVector()
+                            .subtract(p.getLocation().toVector()).normalize().multiply(0.4));
+                    p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1, 1);
+                }
+            }
+
+        }, 0L, 1L);
+
+        Bukkit.getScheduler().runTaskLater(this, () ->
+                Bukkit.getScheduler().cancelTasks(this), 10L);
     }
 
-    // ================= STORY =================
+    /* ---------------- KAPITEL ---------------- */
 
-    private void handleChapter(Player p) {
+    private void playNextChapter(Player p, World w) {
+
         int chapter = p.hasMetadata("chapter")
                 ? p.getMetadata("chapter").get(0).asInt()
                 : 1;
 
-        p.sendMessage(ChatColor.GOLD + "📖 Kapitel " + chapter);
+        switch (chapter) {
+
+            case 1 -> {
+                p.sendTitle("Kapitel 1", "Ankunft in der Oberstadt", 10, 60, 10);
+                p.playSound(p.getLocation(), Sound.AMBIENT_CAVE, 1, 1);
+            }
+            case 2 -> {
+                p.teleport(new Location(w, -100, 40, -100));
+                p.sendTitle("Kapitel 2", "Die Unterstadt", 10, 60, 10);
+            }
+            case 3 -> p.sendTitle("Kapitel 3", "Der verrückte Professor", 10, 60, 10);
+            case 4 -> {
+                p.sendTitle("Kapitel 4", "Die Seelenwaffe erwacht", 10, 60, 10);
+                p.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 200, 1));
+            }
+            case 5 -> p.sendTitle("Kapitel 5", "Die ersten Admins", 10, 60, 10);
+            case 6 -> p.sendTitle("Kapitel 6", "Der Adminpalast", 10, 60, 10);
+            case 7 -> p.sendTitle("Kapitel 7", "Sanctum der Admins", 10, 60, 10);
+            case 8 -> p.sendTitle("Kapitel 8", "Der Gelbe Admin kippt", 10, 60, 10);
+            case 9 -> p.sendTitle("Kapitel 9", "Die mysteriöse Figur", 10, 60, 10);
+            case 10 -> p.sendTitle("Kapitel 10", "Ritual der Hellen Materie", 10, 60, 10);
+            case 11 -> p.sendTitle("Kapitel 11", "Schleier der Dunkelheit", 10, 60, 10);
+            case 12 -> p.sendTitle("Kapitel 12", "Die Wahrheit", 10, 60, 10);
+            case 13 -> p.sendTitle("Kapitel 13", "Der Gelbe Admin wird böse", 10, 60, 10);
+            case 14 -> p.sendTitle("Kapitel 14", "Die Welt rüstet auf", 10, 60, 10);
+            case 15 -> p.sendTitle("Kapitel 15", "Seelenwaffen erwachen", 10, 60, 10);
+            case 16 -> p.sendTitle("Kapitel 16", "Ultimativer Commandblock", 10, 60, 10);
+            case 17 -> p.sendTitle("Kapitel 17", "Sanctum bricht", 10, 60, 10);
+            case 18 -> p.sendTitle("Kapitel 18", "Deine Verwandlung", 10, 60, 10);
+            case 19 -> p.sendTitle("Kapitel 19", "Letzter Konflikt", 10, 60, 10);
+            case 20 -> p.sendTitle("Kapitel 20", "ENTSCHEIDUNG", 10, 80, 10);
+
+            default -> {
+                p.sendMessage(ChatColor.GREEN + "Die Geschichte ist abgeschlossen.");
+                return;
+            }
+        }
+
         p.setMetadata("chapter", new FixedMetadataValue(this, chapter + 1));
     }
 }
