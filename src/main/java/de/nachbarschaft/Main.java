@@ -1,16 +1,14 @@
 package de.nachbarschaft;
 
 import org.bukkit.*;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.command.*;
+import org.bukkit.entity.*;
+import org.bukkit.event.*;
+import org.bukkit.event.player.*;
+import org.bukkit.event.entity.*;
+import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
 
@@ -20,33 +18,45 @@ public class Main extends JavaPlugin implements Listener {
 
     private final Map<UUID, Integer> chapterProgress = new HashMap<>();
 
+    /* ===================== ENABLE ===================== */
+
     @Override
     public void onEnable() {
-        getLogger().info("Nachbarschaft Plugin aktiv (NUMMER 1)");
         Bukkit.getPluginManager().registerEvents(this, this);
+        getLogger().info("Nachbarschaft Plugin aktiv!");
     }
 
-    /* =========================
-       KAPITEL COMMAND
-       ========================= */
+    @Override
+    public void onDisable() {
+        getLogger().info("Nachbarschaft Plugin deaktiviert!");
+    }
+
+    /* ===================== COMMANDS ===================== */
+
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+
         if (!(sender instanceof Player p)) return true;
 
-        if (cmd.getName().equalsIgnoreCase("kapitel")) {
-            int chapter = chapterProgress.getOrDefault(p.getUniqueId(), 1);
-            p.sendMessage(ChatColor.GOLD + getChapterText(chapter));
-            chapterProgress.put(p.getUniqueId(), chapter + 1);
-            return true;
-        }
+        switch (cmd.getName().toLowerCase()) {
 
-        if (cmd.getName().equalsIgnoreCase("waffe")) {
-            giveSoulBlade(p);
-            return true;
-        }
+            case "kapitel" -> {
+                int chapter = chapterProgress.getOrDefault(p.getUniqueId(), 1);
+                p.sendMessage(ChatColor.GOLD + getChapterText(chapter));
+                chapterProgress.put(p.getUniqueId(), chapter + 1);
+            }
 
+            case "waffe" -> giveSoulWeapons(p);
+
+            case "adminhelp" -> {
+                p.sendMessage("§e/kapitel §7Story-Fortschritt");
+                p.sendMessage("§e/waffe §7Seelenwaffen erhalten");
+            }
+        }
         return true;
     }
+
+    /* ===================== KAPITEL ===================== */
 
     private String getChapterText(int c) {
         return switch (c) {
@@ -74,60 +84,107 @@ public class Main extends JavaPlugin implements Listener {
         };
     }
 
-    /* =========================
-       SEELENKLINGE
-       ========================= */
-    private void giveSoulBlade(Player p) {
+    /* ===================== SEELENWAFFEN ===================== */
+
+    private void giveSoulWeapons(Player p) {
+
+        if (p.hasMetadata("soulWeaponGiven")) {
+            p.sendMessage("§cDu besitzt deine Seelenwaffen bereits.");
+            return;
+        }
+
+        // SEELENKLINGE
         ItemStack sword = new ItemStack(Material.NETHERITE_SWORD);
-        ItemMeta meta = sword.getItemMeta();
-        meta.setDisplayName(ChatColor.AQUA + "◆ Seelenklinge ◆");
-        meta.setLore(List.of(
-                ChatColor.GRAY + "Gebunden an: " + p.getName(),
-                ChatColor.DARK_PURPLE + "Eine Waffe mit eigenem Willen"
-        ));
-        meta.setUnbreakable(true);
-        sword.setItemMeta(meta);
-        p.getInventory().addItem(sword);
-        p.sendMessage(ChatColor.GREEN + "Deine Seelenklinge erwacht.");
+        ItemMeta sm = sword.getItemMeta();
+        sm.setDisplayName("§b◆ Seelenklinge ◆");
+        sm.setLore(List.of("§7Gebunden an: " + p.getName()));
+        sm.setUnbreakable(true);
+        sword.setItemMeta(sm);
+
+        // SEELENBOGEN
+        ItemStack bow = new ItemStack(Material.BOW);
+        ItemMeta bm = bow.getItemMeta();
+        bm.setDisplayName("§d◆ Seelenbogen ◆");
+        bm.setUnbreakable(true);
+        bow.setItemMeta(bm);
+
+        p.getInventory().addItem(sword, bow);
+        p.setMetadata("soulWeaponGiven", new FixedMetadataValue(this, true));
+
+        p.sendMessage("§aDeine Seelenwaffen erwachen.");
     }
 
     private boolean isSoulBlade(ItemStack item) {
-        if (item == null || !item.hasItemMeta()) return false;
-        return ChatColor.stripColor(item.getItemMeta().getDisplayName())
+        return item != null && item.hasItemMeta()
+                && ChatColor.stripColor(item.getItemMeta().getDisplayName())
                 .equalsIgnoreCase("◆ Seelenklinge ◆");
     }
 
-    /* =========================
-       FÄHIGKEITEN (EVENTS)
-       ========================= */
+    /* ===================== SEELENKLINGE – DASH ===================== */
+
     @EventHandler
-    public void onUse(PlayerInteractEvent e) {
+    public void onRightClick(PlayerInteractEvent e) {
+
+        if (!e.getAction().toString().contains("RIGHT")) return;
         Player p = e.getPlayer();
+
         if (!isSoulBlade(p.getInventory().getItemInMainHand())) return;
 
-        // DASH – Rechtsklick, nur am Boden
-        if (e.getAction().toString().contains("RIGHT_CLICK") && !p.isSneaking()) {
-            if (!p.isOnGround()) return;
+        Vector dir = p.getLocation().getDirection().normalize().multiply(1.7);
+        p.setVelocity(dir);
 
-            Vector dir = p.getLocation().getDirection().normalize().multiply(1.8);
-            p.setVelocity(dir);
+        p.getWorld().spawnParticle(Particle.SOUL, p.getLocation(), 20);
+        p.playSound(p.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1, 1);
 
-            for (Entity ent : p.getNearbyEntities(2, 2, 2)) {
-                if (ent instanceof LivingEntity le && ent != p) {
-                    le.damage(6, p);
-                }
-            }
-        }
-
-        // LUFTANGRIFF – Shift + Rechtsklick
-        if (e.getAction().toString().contains("RIGHT_CLICK") && p.isSneaking()) {
-            for (Entity ent : p.getNearbyEntities(4, 3, 4)) {
-                if (ent instanceof LivingEntity le && ent != p) {
-                    le.setVelocity(new Vector(0, 1.2, 0));
-                    le.damage(8, p);
-                }
+        for (Entity ent : p.getNearbyEntities(2, 2, 2)) {
+            if (ent instanceof LivingEntity le && ent != p) {
+                le.damage(6, p);
+                le.setVelocity(new Vector(0, 0.6, 0));
             }
         }
     }
+
+    /* ===================== LUFTANGRIFF ===================== */
+
+    @EventHandler
+    public void onSneak(PlayerToggleSneakEvent e) {
+
+        if (!e.isSneaking()) return;
+        Player p = e.getPlayer();
+
+        if (!isSoulBlade(p.getInventory().getItemInMainHand())) return;
+
+        for (Entity ent : p.getNearbyEntities(4, 4, 4)) {
+            if (ent instanceof LivingEntity le && ent != p) {
+                le.setVelocity(new Vector(0, 1.2, 0));
+                le.damage(8, p);
+            }
+        }
+        p.getWorld().spawnParticle(Particle.EXPLOSION, p.getLocation(), 1);
+    }
+
+    /* ===================== SEELENBOGEN ===================== */
+
+    @EventHandler
+    public void onBowShoot(EntityShootBowEvent e) {
+
+        if (!(e.getEntity() instanceof Player p)) return;
+        ItemStack bow = e.getBow();
+        if (bow == null || !bow.hasItemMeta()) return;
+
+        if (!bow.getItemMeta().getDisplayName().contains("Seelenbogen")) return;
+
+        for (int i = 0; i < 6; i++) {
+            Arrow a = p.launchProjectile(Arrow.class);
+            a.setVelocity(new Vector(
+                    Math.random() - 0.5,
+                    -0.2,
+                    Math.random() - 0.5
+            ));
+            a.setDamage(4);
+        }
+        p.getWorld().playSound(p.getLocation(), Sound.ENTITY_WITHER_SHOOT, 1, 1);
+    }
 }
+
 
