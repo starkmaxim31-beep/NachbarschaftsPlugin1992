@@ -26,3 +26,9 @@ commands:
     description: Startet Admin Story
   adminhelp:
     description: Hilfe
+  voicecmd:
+    description: Voice-Befehl auslösen
+  regel:
+    description: Regeln verwalten
+  rules:
+    description: Regeln verwalten
