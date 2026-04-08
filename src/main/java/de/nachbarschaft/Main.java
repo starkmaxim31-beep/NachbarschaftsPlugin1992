@@ -2,6 +2,7 @@ package de.nachbarschaft;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import de.nachbarschaft.story.ChapterManager;
+import de.nachbarschaft.commands.ChapterCommand;
 
 public class Main extends JavaPlugin {
 
