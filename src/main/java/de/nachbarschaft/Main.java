@@ -14,59 +14,36 @@ public class Main extends JavaPlugin {
     public void onEnable() {
 
         // Chapter Manager starten
-        chapterManager =
-                new ChapterManager(this);
+        chapterManager = new ChapterManager(this);
 
         // Command registrieren
         if (getCommand("chapter") != null) {
 
-            getCommand("chapter")
-                    .setExecutor(
-                            new ChapterCommand(
-                                    chapterManager
-                            )
-                    );
+            getCommand("chapter").setExecutor(
+                    new ChapterCommand(chapterManager)
+            );
 
         }
 
         // Movement Listener registrieren
-        getServer()
-                .getPluginManager()
-                .registerEvents(
-                        new PlayerMoveListener(
-                                chapterManager
-                        ),
-                        this
-                );
+        getServer().getPluginManager().registerEvents(
+                new PlayerMoveListener(chapterManager),
+                this
+        );
 
-        getLogger()
-                .info(
-                        "NachbarschaftsPlugin gestartet!"
-                );
+        getLogger().info(
+                "NachbarschaftsPlugin gestartet!"
+        );
 
     }
-
-}
-
-
-    chapterManager = new ChapterManager(this);
-
-    getCommand("chapter").setExecutor(new ChapterCommand());
-
-}
 
     @Override
     public void onDisable() {
 
-        getLogger().info("NachbarschaftsPlugin gestoppt!");
+        getLogger().info(
+                "NachbarschaftsPlugin gestoppt!"
+        );
 
     }
 
-    public static Main getInstance() {
-        return instance;
-    }
-
-    public ChapterManager getChapterManager() {
-        return chapterManager;
-    }
 }
