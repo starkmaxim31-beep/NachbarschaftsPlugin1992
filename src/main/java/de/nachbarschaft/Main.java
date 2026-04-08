@@ -3,6 +3,7 @@ package de.nachbarschaft;
 import org.bukkit.plugin.java.JavaPlugin;
 import de.nachbarschaft.story.ChapterManager;
 import de.nachbarschaft.commands.ChapterCommand;
+import de.nachbarschaft.trigger.PlayerMoveListener;
 
 public class Main extends JavaPlugin {
 
@@ -10,7 +11,14 @@ public class Main extends JavaPlugin {
     private ChapterManager chapterManager;
 
   @Override
-public void onEnable() {
+public void onEnable(getServer()
+        .getPluginManager()
+        .registerEvents(
+                new PlayerMoveListener(
+                        chapterManager
+                ),
+                this
+        ); ) {
 
     instance = this;
 
