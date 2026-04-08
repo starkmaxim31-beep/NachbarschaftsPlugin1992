@@ -8,17 +8,19 @@ public class Main extends JavaPlugin {
     private static Main instance;
     private ChapterManager chapterManager;
 
-    @Override
-    public void onEnable() {
+  @Override
+public void onEnable() {
 
-        instance = this;
+    instance = this;
 
-        getLogger().info("NachbarschaftsPlugin gestartet!");
+    getLogger().info("NachbarschaftsPlugin gestartet!");
 
-        chapterManager = new ChapterManager(this);
-        chapterManager.loadChapters();
+    chapterManager = new ChapterManager(this);
+    chapterManager.loadChapters();
 
-    }
+    getCommand("chapter").setExecutor(new ChapterCommand());
+
+}
 
     @Override
     public void onDisable() {
