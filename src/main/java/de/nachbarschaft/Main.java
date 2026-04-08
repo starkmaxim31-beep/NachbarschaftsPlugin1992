@@ -1,28 +1,49 @@
 package de.nachbarschaft;
 
 import org.bukkit.plugin.java.JavaPlugin;
+
 import de.nachbarschaft.story.ChapterManager;
 import de.nachbarschaft.commands.ChapterCommand;
 import de.nachbarschaft.trigger.PlayerMoveListener;
 
 public class Main extends JavaPlugin {
 
-    private static Main instance;
     private ChapterManager chapterManager;
 
-  @Override
-public void onEnable(getServer()
-        .getPluginManager()
-        .registerEvents(
-                new PlayerMoveListener(
-                        chapterManager
-                ),
-                this
-        ); ) {
+    @Override
+    public void onEnable() {
 
-    instance = this;
+        // Chapter Manager starten
+        chapterManager =
+                new ChapterManager(this);
 
-    getLogger().info("NachbarschaftsPlugin gestartet!");
+        // Command registrieren
+        getCommand("chapter")
+                .setExecutor(
+                        new ChapterCommand(
+                                chapterManager
+                        )
+                );
+
+        // Movement Listener registrieren
+        getServer()
+                .getPluginManager()
+                .registerEvents(
+                        new PlayerMoveListener(
+                                chapterManager
+                        ),
+                        this
+                );
+
+        getLogger()
+                .info(
+                        "NachbarschaftsPlugin gestartet!"
+                );
+
+    }
+
+}
+
 
     chapterManager = new ChapterManager(this);
 
