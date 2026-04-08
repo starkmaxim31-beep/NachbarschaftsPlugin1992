@@ -9,6 +9,11 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import de.nachbarschaft.story.events.StoryTriggerManager;
+private StoryTriggerManager triggerManager = new StoryTriggerManager();
+
 public class ChapterManager {
 
     private JavaPlugin plugin;
@@ -41,11 +46,21 @@ public class ChapterManager {
         return chapterMap.getOrDefault(uuid, 1);
     }
 
-    public void setChapter(UUID uuid, int chapter) {
-        chapterMap.put(uuid, chapter);
-        config.set(uuid.toString(), chapter);
-        save();
+ public void setChapter(UUID uuid, int chapter) {
+
+    chapterMap.put(uuid, chapter);
+
+    config.set(uuid.toString(), chapter);
+
+    save();
+
+    Player player = Bukkit.getPlayer(uuid);
+
+    if (player != null) {
+        triggerManager.checkChapterTrigger(player, chapter);
     }
+
+}
 
     public void loadChapters() {
         for (String key : config.getKeys(false)) {
