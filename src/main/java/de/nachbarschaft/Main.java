@@ -17,7 +17,6 @@ public void onEnable() {
     getLogger().info("NachbarschaftsPlugin gestartet!");
 
     chapterManager = new ChapterManager(this);
-    chapterManager.loadChapters();
 
     getCommand("chapter").setExecutor(new ChapterCommand());
 
