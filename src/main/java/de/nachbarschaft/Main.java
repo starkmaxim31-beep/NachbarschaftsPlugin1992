@@ -18,12 +18,16 @@ public class Main extends JavaPlugin {
                 new ChapterManager(this);
 
         // Command registrieren
-        getCommand("chapter")
-                .setExecutor(
-                        new ChapterCommand(
-                                chapterManager
-                        )
-                );
+        if (getCommand("chapter") != null) {
+
+            getCommand("chapter")
+                    .setExecutor(
+                            new ChapterCommand(
+                                    chapterManager
+                            )
+                    );
+
+        }
 
         // Movement Listener registrieren
         getServer()
