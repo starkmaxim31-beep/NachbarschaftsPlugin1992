@@ -1,16 +1,37 @@
 package de.nachbarschaft;
 
 import org.bukkit.plugin.java.JavaPlugin;
+import de.nachbarschaft.story.ChapterManager;
 
 public class Main extends JavaPlugin {
 
+    private static Main instance;
+    private ChapterManager chapterManager;
+
     @Override
     public void onEnable() {
-        getLogger().info("NachbarschaftsPlugin wurde gestartet!");
+
+        instance = this;
+
+        getLogger().info("NachbarschaftsPlugin gestartet!");
+
+        chapterManager = new ChapterManager(this);
+        chapterManager.loadChapters();
+
     }
 
     @Override
     public void onDisable() {
-        getLogger().info("NachbarschaftsPlugin wurde gestoppt!");
+
+        getLogger().info("NachbarschaftsPlugin gestoppt!");
+
+    }
+
+    public static Main getInstance() {
+        return instance;
+    }
+
+    public ChapterManager getChapterManager() {
+        return chapterManager;
     }
 }
