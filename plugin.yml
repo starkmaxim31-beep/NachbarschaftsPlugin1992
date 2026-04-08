@@ -1,1 +1,4 @@
-
+commands:
+  chapter:
+    description: Kapitel verwalten
+    usage: /chapter
