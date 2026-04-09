@@ -16,11 +16,12 @@ public class SoulWeaponManager {
 
     public SoulWeaponManager() {
 
-        // Hier registrieren wir Waffen
+        // Hier registrieren wir Waffen später
         // registerWeapon(new SoulSword());
 
     }
 
+    // Waffe registrieren
     public void registerWeapon(SoulWeapon weapon) {
 
         weapons.put(
@@ -30,6 +31,7 @@ public class SoulWeaponManager {
 
     }
 
+    // Spieler bekommt Waffe
     public void giveWeapon(
             Player player,
             String weaponName
@@ -57,6 +59,7 @@ public class SoulWeaponManager {
 
     }
 
+    // Fähigkeit benutzen
     public void useAbility(Player player) {
 
         SoulWeapon weapon =
@@ -78,12 +81,13 @@ public class SoulWeaponManager {
 
     }
 
-}
+    // Prüfen ob Spieler eine Waffe hat
+    public boolean hasWeapon(Player player) {
 
-public boolean hasWeapon(Player player) {
+        return playerWeapons.containsKey(
+                player.getUniqueId()
+        );
 
-    return playerWeapons.containsKey(
-            player.getUniqueId()
-    );
+    }
 
 }
