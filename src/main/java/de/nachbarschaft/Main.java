@@ -1,13 +1,10 @@
 package de.nachbarschaft;
 
-import org.bukkit.plugin.java.JavaPlugin;
-
-import de.nachbarschaft.story.ChapterManager;
 import de.nachbarschaft.commands.ChapterCommand;
-import de.nachbarschaft.trigger.PlayerMoveListener;
-
+import de.nachbarschaft.story.ChapterManager;
+import de.nachbarschaft.trigger.ZoneTrigger;
 import de.nachbarschaft.soulweapons.SoulWeaponManager;
-import de.nachbarschaft.soulweapons.SoulWeaponListener;
+import org.bukkit.plugin.java.JavaPlugin;
 
 public class Main extends JavaPlugin {
 
@@ -22,57 +19,21 @@ public class Main extends JavaPlugin {
         instance = this;
 
         // Manager starten
-        chapterManager =
-                new ChapterManager();
-
-        soulWeaponManager =
-                new SoulWeaponManager();
+        chapterManager = new ChapterManager();
+        soulWeaponManager = new SoulWeaponManager();
 
         // Command registrieren
-        if (getCommand("chapter") != null) {
+        getCommand("chapter").setExecutor(
+                new ChapterCommand()
+        );
 
-            getCommand("chapter")
-                    .setExecutor(
-                            new ChapterCommand(
-                                    chapterManager
-                            )
-                    );
+        // Listener registrieren
+        getServer().getPluginManager().registerEvents(
+                new ZoneTrigger(),
+                this
+        );
 
-        }
-
-        // Movement Listener
-        getServer()
-                .getPluginManager()
-                .registerEvents(
-                        new PlayerMoveListener(
-                                chapterManager
-                        ),
-                        this
-                );
-
-        // SoulWeapon Listener
-        getServer()
-                .getPluginManager()
-                .registerEvents(
-                        new SoulWeaponListener(),
-                        this
-                );
-
-        getLogger()
-                .info(
-                        "NachbarschaftsPlugin gestartet!"
-                );
-
-    }
-
-    @Override
-    public void onDisable() {
-
-        getLogger()
-                .info(
-                        "NachbarschaftsPlugin gestoppt!"
-                );
-
+        getLogger().info("NachbarschaftsPlugin gestartet!");
     }
 
     public static Main getInstance() {
