@@ -1,25 +1,81 @@
 package de.nachbarschaft.soulweapons;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.entity.Player;
 
-public abstract class SoulWeapon {
+public class SoulWeaponManager {
 
-    private String name;
+    private Map<String, SoulWeapon> weapons =
+            new HashMap<>();
 
-    public SoulWeapon(String name) {
-        this.name = name;
+    private Map<UUID, SoulWeapon> playerWeapons =
+            new HashMap<>();
+
+    public SoulWeaponManager() {
+
+        // Hier registrieren wir Waffen
+        // registerWeapon(new SoulSword());
+
     }
 
-    public String getName() {
-        return name;
+    public void registerWeapon(SoulWeapon weapon) {
+
+        weapons.put(
+                weapon.getName(),
+                weapon
+        );
+
     }
 
-    public abstract void activate(Player player);
+    public void giveWeapon(
+            Player player,
+            String weaponName
+    ) {
 
-    public abstract void ability(Player player);
+        SoulWeapon weapon =
+                weapons.get(weaponName);
 
-    public abstract boolean canUse(UUID uuid);
+        if (weapon == null) {
+
+            player.sendMessage(
+                    "§cDiese Seelenwaffe existiert nicht."
+            );
+
+            return;
+
+        }
+
+        playerWeapons.put(
+                player.getUniqueId(),
+                weapon
+        );
+
+        weapon.activate(player);
+
+    }
+
+    public void useAbility(Player player) {
+
+        SoulWeapon weapon =
+                playerWeapons.get(
+                        player.getUniqueId()
+                );
+
+        if (weapon == null) {
+
+            player.sendMessage(
+                    "§cDu besitzt keine Seelenwaffe."
+            );
+
+            return;
+
+        }
+
+        weapon.ability(player);
+
+    }
 
 }
