@@ -79,3 +79,11 @@ public class SoulWeaponManager {
     }
 
 }
+
+public boolean hasWeapon(Player player) {
+
+    return playerWeapons.containsKey(
+            player.getUniqueId()
+    );
+
+}
