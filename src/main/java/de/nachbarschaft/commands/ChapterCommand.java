@@ -1,20 +1,18 @@
 package de.nachbarschaft.commands;
 
+import de.nachbarschaft.Main;
+import de.nachbarschaft.story.ChapterManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import de.nachbarschaft.story.ChapterManager;
-
 public class ChapterCommand implements CommandExecutor {
 
-    private ChapterManager chapterManager;
+    private final ChapterManager chapterManager;
 
-    public ChapterCommand(ChapterManager chapterManager) {
-
-        this.chapterManager = chapterManager;
-
+    public ChapterCommand() {
+        this.chapterManager = Main.getInstance().getChapterManager();
     }
 
     @Override
@@ -26,55 +24,55 @@ public class ChapterCommand implements CommandExecutor {
     ) {
 
         if (!(sender instanceof Player)) {
+            sender.sendMessage("Nur Spieler!");
+            return true;
+        }
 
-            sender.sendMessage(
-                    "Nur Spieler können das benutzen."
-            );
+        Player player = (Player) sender;
+
+        if (args.length == 0) {
+
+            int chapter = chapterManager.getChapter(player);
+
+            player.sendMessage("§eDein Kapitel: §6" + chapter);
+            return true;
+        }
+
+        if (args[0].equalsIgnoreCase("set")) {
+
+            if (args.length < 2) {
+                player.sendMessage("§cBenutzung: /chapter set <zahl>");
+                return true;
+            }
+
+            try {
+
+                int chapter = Integer.parseInt(args[1]);
+
+                chapterManager.setChapter(player, chapter);
+
+            } catch (NumberFormatException e) {
+
+                player.sendMessage("§cBitte eine gültige Zahl eingeben.");
+
+            }
 
             return true;
-
         }
 
-        Player player =
-                (Player) sender;
+        if (args[0].equalsIgnoreCase("next")) {
 
-        if (args.length != 1) {
-
-            player.sendMessage(
-                    "§cBenutzung: /chapter <nummer>"
-            );
-
+            chapterManager.nextChapter(player);
             return true;
-
         }
 
-        try {
+        if (args[0].equalsIgnoreCase("reset")) {
 
-            int chapter =
-                    Integer.parseInt(
-                            args[0]
-                    );
-
-            chapterManager.setChapter(
-                    player.getUniqueId(),
-                    chapter
-            );
-
-            player.sendMessage(
-                    "§aKapitel gesetzt auf "
-                            + chapter
-            );
-
-        } catch (NumberFormatException e) {
-
-            player.sendMessage(
-                    "§cBitte eine Zahl eingeben."
-            );
-
+            chapterManager.resetChapter(player);
+            return true;
         }
 
+        player.sendMessage("§cUnbekannter Befehl.");
         return true;
-
     }
-
 }
