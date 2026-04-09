@@ -1,117 +1,98 @@
 package de.nachbarschaft.story;
 
-import java.io.File;
-import java.io.IOException;
+import de.nachbarschaft.Main;
+import org.bukkit.entity.Player;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
-
-import de.nachbarschaft.story.events.StoryTriggerManager;
-
 public class ChapterManager {
 
-    private JavaPlugin plugin;
+    private final Map<UUID, Integer> playerChapters = new HashMap<>();
 
-    private Map<UUID, Integer> chapterMap = new HashMap<>();
+    // Kapitel setzen
+    public void setChapter(Player player, int chapter) {
 
-    private File file;
-    private YamlConfiguration config;
+        playerChapters.put(player.getUniqueId(), chapter);
 
-    private StoryTriggerManager triggerManager =
-            new StoryTriggerManager();
+        player.sendMessage("§eKapitel gesetzt auf §6" + chapter);
 
-    public ChapterManager(JavaPlugin plugin) {
+        // Belohnungen prüfen
+        giveChapterRewards(player, chapter);
 
-        this.plugin = plugin;
+    }
 
-        file = new File(
-                plugin.getDataFolder(),
-                "chapters.yml"
+    // Kapitel abrufen
+    public int getChapter(Player player) {
+
+        return playerChapters.getOrDefault(
+                player.getUniqueId(),
+                1
         );
 
-        if (!file.exists()) {
-            plugin.getDataFolder().mkdirs();
-            plugin.saveResource(
-                    "chapters.yml",
-                    false
-            );
-        }
+    }
 
-        config = YamlConfiguration.loadConfiguration(file);
+    // Nächstes Kapitel
+    public void nextChapter(Player player) {
 
-        load();
+        int current = getChapter(player);
+        int next = current + 1;
+
+        setChapter(player, next);
 
     }
 
-    public int getChapter(UUID uuid) {
+    // Kapitel zurücksetzen
+    public void resetChapter(Player player) {
 
-        return chapterMap.getOrDefault(uuid, 1);
-
-    }
-
-    public void setChapter(
-            UUID uuid,
-            int chapter
-    ) {
-
-        chapterMap.put(uuid, chapter);
-
-        config.set(
-                uuid.toString(),
-                chapter
+        playerChapters.put(
+                player.getUniqueId(),
+                1
         );
 
-        save();
-
-        Player player =
-                Bukkit.getPlayer(uuid);
-
-        if (player != null) {
-
-            triggerManager
-                    .checkChapterTrigger(
-                            player,
-                            chapter
-                    );
-
-        }
+        player.sendMessage("§cKapitel wurde zurückgesetzt.");
 
     }
 
-    private void load() {
+    // Kapitel-Belohnungen
+    private void giveChapterRewards(Player player, int chapter) {
 
-        for (String key :
-                config.getKeys(false)) {
+        switch (chapter) {
 
-            UUID uuid =
-                    UUID.fromString(key);
+            case 3:
 
-            int chapter =
-                    config.getInt(key);
+                Main.getInstance()
+                        .getSoulWeaponManager()
+                        .giveWeapon(
+                                player,
+                                "Seelenklinge"
+                        );
 
-            chapterMap.put(
-                    uuid,
-                    chapter
-            );
+                player.sendMessage("§dDu hast deine erste Seelenwaffe erhalten!");
+                break;
 
-        }
+            case 5:
 
-    }
+                Main.getInstance()
+                        .getSoulWeaponManager()
+                        .giveWeapon(
+                                player,
+                                "Seelenstab"
+                        );
 
-    private void save() {
+                player.sendMessage("§5Eine neue Macht wurde freigeschaltet!");
+                break;
 
-        try {
+            case 10:
 
-            config.save(file);
+                player.sendMessage("§cEin Boss ist erschienen!");
+                break;
 
-        } catch (IOException e) {
+            case 20:
 
-            e.printStackTrace();
+                player.sendMessage("§6Das Finale beginnt...");
+                break;
 
         }
 
