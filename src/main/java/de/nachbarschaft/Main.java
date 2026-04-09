@@ -54,6 +54,10 @@ public class Main extends JavaPlugin {
                 );
 
         getLogger()
+                .getPluginManager()
+                .registerEvents(
+                       new SoulWeaponListener(),
+                this
                 .info(
                         "NachbarschaftsPlugin gestartet!"
                 );
