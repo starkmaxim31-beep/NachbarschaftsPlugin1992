@@ -5,29 +5,26 @@ import org.bukkit.plugin.java.JavaPlugin;
 import de.nachbarschaft.story.ChapterManager;
 import de.nachbarschaft.commands.ChapterCommand;
 import de.nachbarschaft.trigger.PlayerMoveListener;
+
 import de.nachbarschaft.soulweapons.SoulWeaponManager;
 import de.nachbarschaft.soulweapons.SoulWeaponListener;
 
 public class Main extends JavaPlugin {
 
-    // Singleton Instance
     private static Main instance;
 
-    // Manager
     private ChapterManager chapterManager;
     private SoulWeaponManager soulWeaponManager;
 
     @Override
     public void onEnable() {
 
-        // Instance setzen
         instance = this;
 
-        // Chapter Manager starten
+        // Manager starten
         chapterManager =
                 new ChapterManager(this);
 
-        // SoulWeapon Manager starten
         soulWeaponManager =
                 new SoulWeaponManager();
 
@@ -43,7 +40,7 @@ public class Main extends JavaPlugin {
 
         }
 
-        // Movement Listener registrieren
+        // Movement Listener
         getServer()
                 .getPluginManager()
                 .registerEvents(
@@ -53,11 +50,15 @@ public class Main extends JavaPlugin {
                         this
                 );
 
-        getLogger()
+        // SoulWeapon Listener
+        getServer()
                 .getPluginManager()
                 .registerEvents(
-                       new SoulWeaponListener(),
-                this
+                        new SoulWeaponListener(),
+                        this
+                );
+
+        getLogger()
                 .info(
                         "NachbarschaftsPlugin gestartet!"
                 );
@@ -74,17 +75,14 @@ public class Main extends JavaPlugin {
 
     }
 
-    // Instance Getter
     public static Main getInstance() {
         return instance;
     }
 
-    // Chapter Manager Getter
     public ChapterManager getChapterManager() {
         return chapterManager;
     }
 
-    // SoulWeapon Manager Getter
     public SoulWeaponManager getSoulWeaponManager() {
         return soulWeaponManager;
     }
