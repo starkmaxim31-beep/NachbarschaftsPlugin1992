@@ -16,8 +16,13 @@ public class SoulWeaponManager {
 
     public SoulWeaponManager() {
 
-        // Hier registrieren wir Waffen später
-        // registerWeapon(new SoulSword());
+       public SoulWeaponManager() {
+
+    registerWeapon(
+            new SoulSword()
+    );
+
+}
 
     }
 
