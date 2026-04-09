@@ -6,6 +6,7 @@ import de.nachbarschaft.story.ChapterManager;
 import de.nachbarschaft.commands.ChapterCommand;
 import de.nachbarschaft.trigger.PlayerMoveListener;
 import de.nachbarschaft.soulweapons.SoulWeaponManager;
+import de.nachbarschaft.soulweapons.SoulWeaponListener;
 
 public class Main extends JavaPlugin {
 
