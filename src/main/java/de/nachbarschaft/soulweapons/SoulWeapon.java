@@ -1,25 +1,17 @@
 package de.nachbarschaft.soulweapons;
 
-import java.util.UUID;
-
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
-public abstract class SoulWeapon {
+public interface SoulWeapon {
 
-    private String name;
+    // Name der Waffe
+    String getName();
 
-    public SoulWeapon(String name) {
-        this.name = name;
-    }
+    // Item erstellen
+    ItemStack createItem();
 
-    public String getName() {
-        return name;
-    }
-
-    public abstract void activate(Player player);
-
-    public abstract void ability(Player player);
-
-    public abstract boolean canUse(UUID uuid);
+    // Fähigkeit aktivieren
+    void activateAbility(Player player);
 
 }
