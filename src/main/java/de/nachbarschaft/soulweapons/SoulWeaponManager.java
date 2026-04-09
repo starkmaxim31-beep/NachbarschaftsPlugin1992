@@ -1,95 +1,32 @@
 package de.nachbarschaft.soulweapons;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.entity.Player;
 
-public class SoulWeaponManager {
+public abstract class SoulWeapon {
 
-    // Alle registrierten Waffen
-    private Map<String, SoulWeapon> weapons =
-            new HashMap<>();
+    private String name;
 
-    // Welche Waffe ein Spieler besitzt
-    private Map<UUID, SoulWeapon> playerWeapons =
-            new HashMap<>();
+    public SoulWeapon(String name) {
 
-    public SoulWeaponManager() {
-
-        // Standard-Waffen registrieren
-        registerWeapon(new SoulSword());
+        this.name = name;
 
     }
 
-    // Waffe registrieren
-    public void registerWeapon(SoulWeapon weapon) {
+    public String getName() {
 
-        weapons.put(
-                weapon.getName(),
-                weapon
-        );
+        return name;
 
     }
 
-    // Spieler bekommt Waffe
-    public void giveWeapon(
-            Player player,
-            String weaponName
-    ) {
+    // Wird beim Erhalten der Waffe ausgeführt
+    public abstract void activate(Player player);
 
-        SoulWeapon weapon =
-                weapons.get(weaponName);
+    // Fähigkeit der Waffe
+    public abstract void ability(Player player);
 
-        if (weapon == null) {
-
-            player.sendMessage(
-                    "§cDiese Seelenwaffe existiert nicht."
-            );
-
-            return;
-
-        }
-
-        playerWeapons.put(
-                player.getUniqueId(),
-                weapon
-        );
-
-        weapon.activate(player);
-
-    }
-
-    // Fähigkeit benutzen
-    public void useAbility(Player player) {
-
-        SoulWeapon weapon =
-                playerWeapons.get(
-                        player.getUniqueId()
-                );
-
-        if (weapon == null) {
-
-            player.sendMessage(
-                    "§cDu besitzt keine Seelenwaffe."
-            );
-
-            return;
-
-        }
-
-        weapon.ability(player);
-
-    }
-
-    // Prüfen ob Spieler Waffe hat
-    public boolean hasWeapon(Player player) {
-
-        return playerWeapons.containsKey(
-                player.getUniqueId()
-        );
-
-    }
+    // Cooldown / Nutzung prüfen
+    public abstract boolean canUse(UUID uuid);
 
 }
