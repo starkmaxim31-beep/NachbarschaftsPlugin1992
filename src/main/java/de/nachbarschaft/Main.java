@@ -23,7 +23,7 @@ public class Main extends JavaPlugin {
 
         // Manager starten
         chapterManager =
-                new ChapterManager(this);
+                new ChapterManager();
 
         soulWeaponManager =
                 new SoulWeaponManager();
